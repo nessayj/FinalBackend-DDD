@@ -1,5 +1,6 @@
 package com.DDD.entity;
 
+import com.DDD.constant.Authority;
 import lombok.*;
 
 import javax.persistence.*;
@@ -13,26 +14,41 @@ public class Member {
     @Column(name="member_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     private String name;
+
+    @Column(nullable = false)
     private String password;
+
     private String tel;
+
+    @Column(unique = true, nullable = false)
     private String nickName;
+
     private String instagram;
+
     private String profileImg;
+
     private String backgroundImg;
 
-//    @Enumerated(EnumType.STRING)
-//    private Authority authority;
+    private String introduce;
+
+    @Enumerated(EnumType.STRING)
+    private Authority authority;
 
     @Builder
-    public Member( String email, String name, String password, String tel, String nickName, String instagram, String profileImg, String backgroundImg) {
+    public Member( String email, String name, String password, Authority authority, String tel, String nickName, String instagram, String introduce, String profileImg, String backgroundImg) {
         this.email = email;
         this.name = name;
         this.password = password;
+        this.authority = authority;
         this.tel = tel;
         this.nickName = nickName;
         this.instagram = instagram;
+        this.introduce = introduce;
         this.profileImg = profileImg;
         this.backgroundImg = backgroundImg;
     }
