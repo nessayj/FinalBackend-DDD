@@ -39,18 +39,18 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    @Builder
-    public Member( String email, String name, String password, Authority authority, String tel, String nickName, String instagram, String introduce, String profileImg, String backgroundImg) {
-        this.email = email;
-        this.name = name;
-        this.password = password;
-        this.authority = authority;
-        this.tel = tel;
-        this.nickName = nickName;
-        this.instagram = instagram;
-        this.introduce = introduce;
-        this.profileImg = profileImg;
-        this.backgroundImg = backgroundImg;
-    }
+//    @Builder
+//    public Member( String email, String name, String password, Authority authority, String tel, String nickName, String instagram, String introduce, String profileImg, String backgroundImg) {
+//        this.email = email;
+//        this.name = name;
+//        this.password = password;
+//        this.authority = authority;
+//        this.tel = tel;
+//        this.nickName = nickName;
+//        this.instagram = instagram;
+//        this.introduce = introduce;
+//        this.profileImg = profileImg;
+//        this.backgroundImg = backgroundImg;
+//    }
 
 }
