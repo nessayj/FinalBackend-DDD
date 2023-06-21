@@ -16,6 +16,9 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+//    // 로그인
+//    public boolean loginMember()
+
     // 회원가입
     public boolean signupMember(String email, String password, String nickname, String tel, String name, String instagram) {
         Member member = new Member();

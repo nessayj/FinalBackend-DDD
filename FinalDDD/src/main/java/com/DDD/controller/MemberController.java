@@ -17,6 +17,13 @@ import java.util.Map;
 public class MemberController {
     private final MemberService memberService;
 
+//    @PostMapping("/login")
+//    public ResponseEntity<Boolean> loginMember(@RequestBody Map<String, Object> loginData){
+//        String email = (String) loginData.get("email");
+//        String password = (String) loginData.get("password");
+//
+//    }
+
     @PostMapping("/signup")
     public ResponseEntity<Boolean> signupMember(@RequestBody Map<String, Object> signupData)  {
         String email = (String) signupData.get("email");
