@@ -4,9 +4,11 @@ import com.DDD.constant.Authority;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Table
+@Table(name = "member")
 @Getter @Setter @ToString
 @NoArgsConstructor
 public class Member {
@@ -42,19 +44,23 @@ public class Member {
     @Column(nullable = false)
     private boolean isActive = true;
 
+//    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+//    private List<FreeBoard> freeBoardList = new ArrayList<>();
 
-//    @Builder
-//    public Member( String email, String name, String password, Authority authority, String tel, String nickName, String instagram, String introduce, String profileImg, String backgroundImg) {
-//        this.email = email;
-//        this.name = name;
-//        this.password = password;
-//        this.authority = authority;
-//        this.tel = tel;
-//        this.nickName = nickName;
-//        this.instagram = instagram;
-//        this.introduce = introduce;
-//        this.profileImg = profileImg;
-//        this.backgroundImg = backgroundImg;
-//    }
+
+    @Builder // * .메소드 형태로 부르는 자바문법과 달리
+    public Member( String email, String name, String password, Authority authority, String tel, String nickname, String instagram, String introduce, String profileImg, String backgroundImg) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
+        this.authority = authority;
+        this.tel = tel;
+        this.nickname = nickname;
+        this.instagram = instagram;
+        this.introduce = introduce;
+        this.profileImg = profileImg;
+        this.backgroundImg = backgroundImg;
+    }
 
 }
+
