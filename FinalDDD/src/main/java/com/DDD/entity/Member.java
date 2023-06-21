@@ -26,7 +26,7 @@ public class Member {
     private String tel;
 
     @Column(unique = true, nullable = false)
-    private String nickName;
+    private String nickname;
 
     private String instagram;
 
@@ -38,6 +38,10 @@ public class Member {
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
+
+    @Column(nullable = false)
+    private boolean isActive = true;
+
 
 //    @Builder
 //    public Member( String email, String name, String password, Authority authority, String tel, String nickName, String instagram, String introduce, String profileImg, String backgroundImg) {
