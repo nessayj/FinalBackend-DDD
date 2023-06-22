@@ -17,12 +17,18 @@ import java.util.Map;
 public class MemberController {
     private final MemberService memberService;
 
-//    @PostMapping("/login")
-//    public ResponseEntity<Boolean> loginMember(@RequestBody Map<String, Object> loginData){
-//        String email = (String) loginData.get("email");
-//        String password = (String) loginData.get("password");
-//
-//    }
+    // POST : 로그인 체크
+    @PostMapping(value="/login")
+    public ResponseEntity<Boolean> memberLogin(@RequestBody Map<String, String> loginData) {
+        String user = loginData.get("user");
+        String pwd = loginData.get("pwd");
+        boolean result = memberService.loginCheck(user, pwd);
+        if (result) {
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<Boolean> signupMember(@RequestBody Map<String, Object> signupData)  {
