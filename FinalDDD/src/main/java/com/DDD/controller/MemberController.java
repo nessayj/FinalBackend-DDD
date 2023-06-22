@@ -1,6 +1,10 @@
 package com.DDD.controller;
 
 
+import com.DDD.dto.MemberRequestDto;
+import com.DDD.dto.MemberResponseDto;
+import com.DDD.dto.TokenDto;
+import com.DDD.service.AuthService;
 import com.DDD.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,54 +13,41 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+@Slf4j
 
 @RestController
-@Slf4j
-@RequiredArgsConstructor
 @RequestMapping("/members")
+@RequiredArgsConstructor
 public class MemberController {
     private final MemberService memberService;
-
-    // POST : 로그인 체크
-    @PostMapping(value="/login")
-    public ResponseEntity<Boolean> memberLogin(@RequestBody Map<String, String> loginData) {
-        String user = loginData.get("user");
-        String pwd = loginData.get("pwd");
-        boolean result = memberService.loginCheck(user, pwd);
-        if (result) {
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-        }
-    }
+    private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Boolean> signupMember(@RequestBody Map<String, Object> signupData)  {
-        String email = (String) signupData.get("email");
-        String password = (String) signupData.get("password");
-        String nickname = (String) signupData.get("nickname");
-        String name = (String) signupData.get("name");
-        String tel = (String) signupData.get("tel");
-        String instagram = (String) signupData.get("instagram");
-        boolean result = memberService.signupMember(email, password, nickname, name, tel, instagram);
-        if (result){
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(false, HttpStatus.OK);
-        }
+    public ResponseEntity<MemberResponseDto> signup(@RequestBody MemberRequestDto requestDto) {
+        return ResponseEntity.ok(authService.signup(requestDto));
     }
+
+
+    @PostMapping("/login")
+    public ResponseEntity<TokenDto> login(@RequestBody MemberRequestDto requestDto) {
+        return ResponseEntity.ok(authService.login(requestDto));
+    }
+
 
     @PostMapping("/emaildup")
     public ResponseEntity<Boolean> emailDup(@RequestBody Map<String, String> emailDupData) {
         String email = emailDupData.get("email");
-        return ResponseEntity.ok(memberService.emailDupCk(email));
+        boolean isDuplicate = memberService.emailDupCk(email);
+        return ResponseEntity.ok(isDuplicate);
     }
 
     @PostMapping("/nicknamedup")
-    public ResponseEntity<Boolean> nicknamelDup(@RequestBody Map<String, String> nicknameDupData) {
+    public ResponseEntity<Boolean> nicknameDup(@RequestBody Map<String, String> nicknameDupData) {
         String nickname = nicknameDupData.get("nickname");
-        return ResponseEntity.ok(memberService.nicknameDupCk(nickname));
+        boolean isDuplicate = memberService.nicknameDupCk(nickname);
+        return ResponseEntity.ok(isDuplicate);
     }
+
 
 
 }
