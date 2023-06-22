@@ -49,7 +49,7 @@ public class Member {
 
 
     @Builder // * .메소드 형태로 부르는 자바문법과 달리
-    public Member( String email, String name, String password, Authority authority, String tel, String nickname, String instagram, String introduce, String profileImg, String backgroundImg) {
+    public Member( String email, String name, String password, Authority authority, String tel, String nickname, String instagram, String introduce, String profileImg, String backgroundImg, boolean isActive) {
         this.email = email;
         this.name = name;
         this.password = password;
@@ -60,6 +60,7 @@ public class Member {
         this.introduce = introduce;
         this.profileImg = profileImg;
         this.backgroundImg = backgroundImg;
+        this.isActive = isActive;
     }
 
 }

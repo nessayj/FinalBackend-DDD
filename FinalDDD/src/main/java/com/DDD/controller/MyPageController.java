@@ -8,6 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +36,6 @@ public class MyPageController {
         return ResponseEntity.ok(memberService.newNickname(email, nickname));
     }
 
-    //////////////////
     @PostMapping("/changeName")
     public ResponseEntity<Boolean> changeName(@RequestBody Map<String, String> infoData) {
         String email = infoData.get("email");
@@ -61,4 +63,40 @@ public class MyPageController {
         String introduce = infoData.get("introduce");
         return ResponseEntity.ok(memberService.newIntroduce(email, introduce));
     }
+
+//    @PostMapping("/memberdelete")
+//    public ResponseEntity<Map<?, ?>> memberDelete( HttpServletResponse response, @RequestBody Map<String, Object> Data) {
+//        String email = (String) Data.get("email");
+//        String password = (String) Data.get("password");
+//        return ResponseEntity.ok(memberService.memberDelete(email, password));
+//
+//    }
+//    @PostMapping("/memberdelete")
+//    public ResponseEntity<Map<?, ?>> memberDelete(
+//            HttpServletResponse response,
+//            @CookieValue(value = "token", required = false) String token,
+//            @RequestBody Map<String, Object> Data) throws Exception {
+//        String email = (String) Data.get("email");
+//        String password = (String) Data.get("password");
+//        Map<String ,String> map = new HashMap<>();
+//        if(token != null){
+//            log.info("로그인상태입니당");
+//            String memberNumStr = jwtController.tokenCheck(token);
+//            Long memberNum = Long.parseLong(memberNumStr);
+//            map = memberService.memberDelete(email, password);
+//            if(map.get("memberDelete").equals("OK")){
+//                Cookie cookie = new Cookie("token", null); // choiceCookieName(쿠키 이름)에 대한 값을 null로 지정
+//                cookie.setMaxAge(0); // 유효시간을 0으로 설정
+//                cookie.setHttpOnly(true);
+//                cookie.setPath("/");
+//                response.addCookie(cookie);
+//            }
+//        }else {
+//            map.put("memberDelete", "loginError");
+//        }
+//        return ResponseEntity.ok().body(map);
+//    }
+
+
+
 }

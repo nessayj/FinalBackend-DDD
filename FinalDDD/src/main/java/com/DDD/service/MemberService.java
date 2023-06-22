@@ -5,13 +5,12 @@ import com.DDD.entity.Member;
 import com.DDD.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -20,6 +19,9 @@ import java.util.Optional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
 
     // 이메일 중복 체크
     public boolean emailDupCk(String email) {
@@ -110,6 +112,25 @@ public class MemberService {
                     return true;
                 })
                 .orElse(false);
+    }
+
+    // 회원 탈퇴
+    public Map<String, String> memberDelete(String email,  String password){
+        Map<String ,String> map = new HashMap<>();
+        Optional<Member> member= memberRepository.findByEmail(email);
+        if (member.isEmpty()) {
+            map.put("memberDelete", "Nothing to delete.");
+            return map;
+        }
+        if(passwordEncoder.matches(password, member.get().getPassword())){
+            member.get().setActive(false);
+            Member savedMember = memberRepository.save(member.get());
+            log.info(savedMember.toString());
+            map.put("memberDelete", "Deleted successfully");
+            return map;
+        }
+        map.put("memberDelete", "Delete is Failed");
+        return map;
     }
 
 
