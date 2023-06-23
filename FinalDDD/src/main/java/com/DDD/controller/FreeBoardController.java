@@ -7,12 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @Slf4j
@@ -21,6 +19,25 @@ import java.util.List;
 public class FreeBoardController {
     @Autowired
     private final FreeBoardService freeBoardService;
+
+    // 게시글 작성
+    @PostMapping("/write")
+    public ResponseEntity<Boolean> boardWrite(@RequestBody Map<String, String> data){
+        String author = data.get("author");
+        String category = data.get("category");
+        String region = data.get("region");
+        String title =  data.get("title");
+        String image =  data.get("image");
+        String contents = data.get("contents");
+
+        boolean result = freeBoardService.createBoards(author, category, region, title, image, contents);
+        if (result) {
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
     // 카테고리별 자유게시판 목록 조회
     @GetMapping("/{category}")
