@@ -28,7 +28,7 @@ import java.util.List;
 @Slf4j
 @Component
 public class ExhibitionApiService {
-    @Value("${api.serviceKey}")
+//    @Value("${api.serviceKey}")
     private String apiKey;
 
     @Autowired
