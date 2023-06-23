@@ -17,4 +17,5 @@ public class FreeBoardDto {  // 프론트엔드와 주고 받을 때 사용
     private String image; // 게시판 이미지
     private int views; // 게시판 조회수
     private LocalDateTime writeDate; // 게시판 작성일
+
 }

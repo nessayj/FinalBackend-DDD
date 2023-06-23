@@ -1,10 +1,13 @@
 package com.DDD.entity;
 
+import com.DDD.dto.FreeBoardDto;
 import jdk.jfr.Timestamp;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,8 +25,8 @@ public class FreeBoard {
     private Long boardNo; // Primary Key : 게시판 번호
 
     @ManyToOne(fetch = FetchType.LAZY) // N:1 다대일 관계
-    @JoinColumn(name = "nickName",  referencedColumnName = "nickname", nullable = false)
-    // user_id 는 게시판 테이블의 작성자, 'referencedColumnName' 는 참조 테이블로 회원정보의 닉네임을 참조한다는 내용
+    @JoinColumn(name = "author_id",  referencedColumnName = "member_id", nullable = false)
+    // author 은 게시판 테이블의 작성자, 'referencedColumnName' 는 참조 테이블로 회원정보의 PK를 참조함
     private Member author; // 클래스에 대한 참조변수
 
     @Column(name = "board_ctg", nullable = false, length = 30) // 게시판 카테고리
@@ -43,15 +46,27 @@ public class FreeBoard {
 
     @ColumnDefault("0") // 조회수 (기본값 0 설정)
     @Column(nullable = false)
-    private int views;
+    private Integer views;
 
-    @Timestamp // 작성일
+    @CreatedDate // 작성일(CreatedDate)로 해야 스키마 변경할 필요 무
     @Column(name = "write_date", nullable = false)
     private LocalDateTime writeDate = LocalDateTime.now();
 
 
-    // 댓글 테이블 조인
-    @OneToMany(mappedBy = "freeBoard", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // 하나의 게시물에 다수의 댓글 존재하므로
-    private List<BoardComment> comments;
+//    // 댓글 테이블 조인
+//    @OneToMany(mappedBy = "freeBoard", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // 하나의 게시물에 다수의 댓글 존재하므로
+//    private List<BoardComment> comments;
+
+    @Builder
+    public FreeBoard(FreeBoardDto dto, Member member) {
+        this.author = member;
+        this.category = dto.getCategory();
+        this.region = dto.getRegion();
+        this.title = dto.getTitle();
+        this.contents = dto.getContents();
+        this.image = dto.getImage();
+        this.views = dto.getViews();
+        this.writeDate = LocalDateTime.now();
+    }
 
 }

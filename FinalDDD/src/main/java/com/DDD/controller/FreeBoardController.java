@@ -1,4 +1,5 @@
 package com.DDD.controller;
+import com.DDD.dto.FreeBoardDto;
 import com.DDD.entity.FreeBoard;
 import com.DDD.service.FreeBoardService;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,12 @@ public class FreeBoardController {
 
     // 카테고리별 자유게시판 목록 조회
     @GetMapping("/{category}")
-    public ResponseEntity<List<FreeBoard>> getFreeBoardsByCategory(@PathVariable String category) {
-        List<FreeBoard> freeBoards = freeBoardService.getFreeBoardsByCategory(category);
-        return new ResponseEntity<>(freeBoards, HttpStatus.OK);
+    public ResponseEntity<List<FreeBoardDto>> getFreeBoardsByCategory(@PathVariable("category") String category) {
+        List<FreeBoardDto> freeBoardList = freeBoardService.getFreeBoardsByCategory(category);
+        if (!freeBoardList.isEmpty()) {
+            return new ResponseEntity<>(freeBoardList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
