@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,32 @@ public class FreeBoardService {
         freeBoardRepository.save(freeBoard);
         return true;
     }
+
+    // 게시글 상세조회
+    public FreeBoardDto selectBoardOne(Long boardNo) {
+        FreeBoard freeBoard = freeBoardRepository.findById(boardNo)
+                .orElseThrow(() -> new EntityNotFoundException("해당 게시물을 찾을 수 없습니다."));
+
+
+        FreeBoardDto freeboardDto = new FreeBoardDto();
+        freeboardDto.setBoardNo(freeBoard.getBoardNo());
+        freeboardDto.setAuthor(freeBoard.getAuthor().getNickname());
+        freeboardDto.setCategory(freeBoard.getCategory());
+        freeboardDto.setRegion(freeBoard.getRegion());
+        freeboardDto.setTitle(freeBoard.getTitle());
+        freeboardDto.setContents(freeBoard.getContents());
+        freeboardDto.setImage(freeBoard.getImage());
+        freeboardDto.setWriteDate(freeBoard.getWriteDate());
+
+
+
+        if (freeBoard != null && freeboardDto != null) { // 조회수 설정 구간
+            freeboardDto.setViews(freeboardDto.getViews());
+        }
+
+        return freeboardDto;
+    }
+
 
 
     // 카테고리별 게시판 조회

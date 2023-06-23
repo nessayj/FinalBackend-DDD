@@ -38,6 +38,12 @@ public class FreeBoardController {
         }
     }
 
+    // 게시글 상세 조회
+    @GetMapping("/boardView/{boardNo}")
+    public ResponseEntity<FreeBoard> getBoard(@PathVariable("boardNo") Long boardNo) {
+        return new ResponseEntity(freeBoardService.selectBoardOne(boardNo), HttpStatus.OK);
+    }
+
 
     // 카테고리별 자유게시판 목록 조회
     @GetMapping("/{category}")
