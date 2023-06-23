@@ -2,11 +2,9 @@ package com.DDD.entity;
 
 import com.DDD.dto.FreeBoardDto;
 import jdk.jfr.Timestamp;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
@@ -18,6 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString // 자동으로 문자열로 만들 수 있도록 오버라이딩(ToString)
+@NoArgsConstructor
 public class FreeBoard {
     @Id // 해당 키가 Primary Key 임을 지정
     @Column(name = "board_no") // 인스턴스 필드명 boardNo -> board_no로 만들어달라는 의미
@@ -68,5 +67,4 @@ public class FreeBoard {
         this.views = dto.getViews();
         this.writeDate = LocalDateTime.now();
     }
-
 }
