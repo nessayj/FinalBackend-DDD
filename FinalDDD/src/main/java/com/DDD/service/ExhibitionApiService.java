@@ -89,6 +89,6 @@ public class ExhibitionApiService {
             Exhibitions exhibitions = new Exhibitions(item);
             exhibitionsRepository.save(exhibitions);
         }
-        return exhibitionsDtoListDtoList;
+        return exhibitionsListDtoList;
     }
 }
