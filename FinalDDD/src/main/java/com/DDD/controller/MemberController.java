@@ -16,8 +16,9 @@ import java.util.Map;
 @Slf4j
 
 @RestController
-@RequestMapping("/members")
+@RequestMapping("/login")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class MemberController {
     private final MemberService memberService;
     private final AuthService authService;
