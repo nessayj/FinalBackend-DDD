@@ -3,9 +3,9 @@ package com.DDD.service;
 import com.DDD.dto.ExhibitionsDto;
 import com.DDD.entity.Exhibitions;
 import com.DDD.repository.ExhibitionsRepository;
-import lombok.Value;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,20 +19,22 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 
+import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 @Service
 @Slf4j
-@Component
+@Transactional
+@RequiredArgsConstructor
 public class ExhibitionApiService {
     @Value("${api.serviceKey}")
     private String apiKey;
 
-    @Autowired
-    ExhibitionsRepository exhibitionsRepository;
+    private final ExhibitionsRepository exhibitionsRepository;
 
     public String ExhibitionListApi() {
         RestTemplate rest = new RestTemplate();
@@ -51,21 +53,20 @@ public class ExhibitionApiService {
                 .fromUriString("http://www.culture.go.kr")
                 .path("openapi/rest/publicperformancedisplays/realm")
                 .queryParam("serviceKey", apiKey)
+                .queryParam("sortStdr", 1) // 정렬기준 1:등록일, 2:공연명, 3:지역
                 .queryParam("realmCode", "D000") // 분류코드 미술 : D000
-                .queryParam("form", startDate) // 전시시작일
-                .queryParam("to", endDate) // 전시종료일
                 .queryParam("cPage", 1) // 현재페이지
                 .queryParam("rows", 100) // 페이지 당 가져올 전시 수
-                .queryParam("sortStdr", 1) // 정렬기준 1:등록일, 2:공연명, 3:지역
+                .queryParam("form", startDate) // 전시시작일
+                .queryParam("to", endDate) // 전시종료일
                 .encode()
                 .build();
-
         ResponseEntity<String> responseEntity = rest.exchange(uri.toUri(), HttpMethod.GET, requestEntity, String.class);
         String response = responseEntity.getBody();
         return response;
     }
 
-    public List<ExhibitionsDto> listFromJsonObj(String result) {
+    public boolean listFromJsonObj(String result) {
         // xml 데이터를 json 데이터로 변환
         JSONObject xmlToJson = XML.toJSONObject(result);
 
@@ -75,13 +76,13 @@ public class ExhibitionApiService {
         // 배열형식이니 JSONArray로 가져오기
         JSONArray jsonArr = jsonObj.getJSONArray("db");
 
-        // DTO에 List 형식으로 저장
-        List<ExhibitionsDto> exhibitionsListDtoList = new ArrayList<>();
-        for (int i = 0; i < jsonArr.length(); i++) {
-                JSONObject itemJson = (JSONObject) jsonArr.get(i);
-                ExhibitionsDto musicalListDTO = new ExhibitionsDto(itemJson);
-                exhibitionsListDtoList.add(musicalListDTO);
-        }
+//        // DTO에 List 형식으로 저장
+//        List<ExhibitionsDto> exhibitionsListDtoList = new ArrayList<>();
+//        for (int i = 0; i < jsonArr.length(); i++) {
+//                JSONObject itemJson = (JSONObject) jsonArr.get(i);
+//                ExhibitionsDto exhibitionsDto = new ExhibitionsDto(itemJson);
+//                exhibitionsListDtoList.add(exhibitionsDto);
+//        }
 
         // DB저장
         for (int i = 0; i < jsonArr.length(); i++) {
@@ -89,6 +90,7 @@ public class ExhibitionApiService {
             Exhibitions exhibitions = new Exhibitions(item);
             exhibitionsRepository.save(exhibitions);
         }
-        return exhibitionsListDtoList;
+        System.out.println("DB에 저장되라 얍!");
+        return true;
     }
 }
