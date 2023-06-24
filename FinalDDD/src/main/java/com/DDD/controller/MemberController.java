@@ -16,8 +16,9 @@ import java.util.Map;
 @Slf4j
 
 @RestController
-@RequestMapping("/members")
+@RequestMapping("/login")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 public class MemberController {
     private final MemberService memberService;
     private final AuthService authService;
@@ -28,7 +29,7 @@ public class MemberController {
     }
 
 
-    @PostMapping("/login")
+    @PostMapping
     public ResponseEntity<TokenDto> login(@RequestBody MemberRequestDto requestDto) {
         return ResponseEntity.ok(authService.login(requestDto));
     }

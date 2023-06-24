@@ -31,7 +31,7 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class ExhibitionApiService {
-    @Value("${api.serviceKey}")
+//    @Value("${api.serviceKey}")
     private String apiKey;
 
     private final ExhibitionsRepository exhibitionsRepository;
