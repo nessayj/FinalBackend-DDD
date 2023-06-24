@@ -1,6 +1,6 @@
 package com.DDD.service;
 
-import com.DDD.dto.ExhibitionsDto;
+
 import com.DDD.entity.Exhibitions;
 import com.DDD.repository.ExhibitionsRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,6 @@ import org.json.XML;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 @Component
 @Service
@@ -31,12 +29,12 @@ import java.util.List;
 @Transactional
 @RequiredArgsConstructor
 public class ExhibitionApiService {
-//    @Value("${api.serviceKey}")
+    @Value("${api.serviceKey}")
     private String apiKey;
 
     private final ExhibitionsRepository exhibitionsRepository;
 
-    public String ExhibitionListApi() {
+    public String exhibitionListApi() {
         RestTemplate rest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         String body = "";
@@ -48,21 +46,25 @@ public class ExhibitionApiService {
         int startDateValue = Integer.parseInt(startDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         int endDateValue = Integer.parseInt(endDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
-        HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
+        System.out.println("API 키 출력 : " + apiKey);
         UriComponents uri = UriComponentsBuilder
                 .fromUriString("http://www.culture.go.kr")
-                .path("openapi/rest/publicperformancedisplays/realm")
+                .path("/openapi/rest/publicperformancedisplays/realm")
                 .queryParam("serviceKey", apiKey)
                 .queryParam("sortStdr", 1) // 정렬기준 1:등록일, 2:공연명, 3:지역
                 .queryParam("realmCode", "D000") // 분류코드 미술 : D000
                 .queryParam("cPage", 1) // 현재페이지
                 .queryParam("rows", 100) // 페이지 당 가져올 전시 수
-                .queryParam("form", startDate) // 전시시작일
-                .queryParam("to", endDate) // 전시종료일
+                .queryParam("form", startDateValue) // 전시시작일
+                .queryParam("to", endDateValue) // 전시종료일
                 .encode()
                 .build();
+
+        System.out.println("API URI 출력!! : " + uri.toUriString());
         ResponseEntity<String> responseEntity = rest.exchange(uri.toUri(), HttpMethod.GET, requestEntity, String.class);
         String response = responseEntity.getBody();
+        System.out.println("API Response: " + response);
         return response;
     }
 
@@ -70,27 +72,22 @@ public class ExhibitionApiService {
         // xml 데이터를 json 데이터로 변환
         JSONObject xmlToJson = XML.toJSONObject(result);
 
-        // JSONObject로 데이터 가져오기
-        JSONObject jsonObj = xmlToJson.getJSONObject("dbs");
+        // response 객체 가져오기
+        JSONObject responseObj = xmlToJson.getJSONObject("response");
 
-        // 배열형식이니 JSONArray로 가져오기
-        JSONArray jsonArr = jsonObj.getJSONArray("db");
+        // msgBody 객체 가져오기
+        JSONObject msgBodyObj = responseObj.getJSONObject("msgBody");
 
-//        // DTO에 List 형식으로 저장
-//        List<ExhibitionsDto> exhibitionsListDtoList = new ArrayList<>();
-//        for (int i = 0; i < jsonArr.length(); i++) {
-//                JSONObject itemJson = (JSONObject) jsonArr.get(i);
-//                ExhibitionsDto exhibitionsDto = new ExhibitionsDto(itemJson);
-//                exhibitionsListDtoList.add(exhibitionsDto);
-//        }
+        // perforList 배열 가져오기
+        JSONArray perforListArr = msgBodyObj.getJSONArray("perforList");
 
-        // DB저장
-        for (int i = 0; i < jsonArr.length(); i++) {
-            JSONObject item = (JSONObject) jsonArr.get(i);
+        // DB에 저장
+        for (int i = 0; i < perforListArr.length(); i++) {
+            JSONObject item = perforListArr.getJSONObject(i);
             Exhibitions exhibitions = new Exhibitions(item);
             exhibitionsRepository.save(exhibitions);
         }
-        System.out.println("DB에 저장되라 얍!");
+        System.out.println("DB 저장 완료 :)!!");
         return true;
     }
 }

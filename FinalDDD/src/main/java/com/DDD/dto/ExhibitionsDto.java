@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.json.JSONObject;
 
-@Getter @Setter @ToString
+@Getter @Setter
 @RequiredArgsConstructor
 public class ExhibitionsDto {
     private Long exhibitNo;
