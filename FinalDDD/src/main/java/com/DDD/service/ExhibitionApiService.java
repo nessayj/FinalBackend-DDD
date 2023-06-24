@@ -47,7 +47,6 @@ public class ExhibitionApiService {
         int endDateValue = Integer.parseInt(endDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
 
         HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
-        System.out.println("API 키 출력 : " + apiKey);
         UriComponents uri = UriComponentsBuilder
                 .fromUriString("http://www.culture.go.kr")
                 .path("/openapi/rest/publicperformancedisplays/realm")

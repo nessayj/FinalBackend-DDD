@@ -29,7 +29,7 @@ public class Exhibitions {
     private int endDate; // 전시마감일
 
     @Column(name="location")
-    private String location; // 전시장소
+    private String exhibitLocation; // 전시장소
 
     @Column(name="imgUrl")
     private String imgUrl; // 전시 포스터
@@ -43,7 +43,7 @@ public class Exhibitions {
         this.exhibitName = item.getString("title");
         this.startDate = item.getInt("startDate");
         this.endDate = item.getInt("endDate");
-        this.location = item.getString("place");
+        this.exhibitLocation = item.getString("place");
         this.imgUrl = item.getString("thumbnail");
         this.region = item.getString("area");
 
