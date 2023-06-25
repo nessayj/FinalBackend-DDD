@@ -15,8 +15,7 @@ import javax.persistence.*;
 @RequiredArgsConstructor
 public class Exhibitions {
     @Id
-    @Column(name="exhibit_no")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="exhibit_no", nullable = false)
     private Long exhibitNo; // PK; 전시회 번호
 
     @Column(name="exhibit_name")

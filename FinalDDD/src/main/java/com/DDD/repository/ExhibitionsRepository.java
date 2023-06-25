@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ExhibitionsRepository extends JpaRepository<Exhibitions, String> {
-
+    // 전시번호로 찾기
+    Exhibitions findByExhibitNo(Long exhibitNo);
 }

@@ -1,8 +1,10 @@
 package com.DDD.controller;
 
 import com.DDD.dto.ExhibitionDetailDTO;
+import com.DDD.dto.ExhibitionsDTO;
 import com.DDD.service.ExhibitionApiService;
 import com.DDD.service.ExhibitionDetailApiService;
+import com.DDD.service.ExhibitionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.List;
 public class ExhibitionsController {
     private final ExhibitionApiService exhibitionApiService;
     private final ExhibitionDetailApiService exhibitionDetailApiService;
+    private final ExhibitionService exhibitionService;
 
 
     // 전시목록 API 불러오기
@@ -36,6 +39,12 @@ public class ExhibitionsController {
     public List<ExhibitionDetailDTO> getExhibitDetailApi(@PathVariable Integer seq) {
         String result = exhibitionDetailApiService.ExhibitionDetailApi(seq);
         return exhibitionDetailApiService.detailFromJsonObj(result);
+    }
+
+    @GetMapping("/dbList")
+    public ResponseEntity<List<ExhibitionsDTO>> getExhibitionDBList() {
+        List<ExhibitionsDTO> list = exhibitionService.getExhibitionDBList();
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
 }
