@@ -6,20 +6,18 @@ import com.DDD.repository.ExhibitionsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 
 import javax.transaction.Transactional;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -35,36 +33,49 @@ public class ExhibitionApiService {
     private final ExhibitionsRepository exhibitionsRepository;
 
     public String exhibitionListApi() {
-        RestTemplate rest = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        String body = "";
+        try {
+            // API 요청 URL 생성
+            LocalDate startDate = LocalDate.now();
+            LocalDate endDate = startDate.plusYears(1);
+            int startDateValue = Integer.parseInt(startDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            int endDateValue = Integer.parseInt(endDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            String urlString = "http://www.culture.go.kr/openapi/rest/publicperformancedisplays/realm";
+            urlString += "?serviceKey=" + URLEncoder.encode(apiKey, "UTF-8");
+            urlString += "&sortStdr=1";
+            urlString += "&realmCode=D000";
+            urlString += "&cPage=1";
+            urlString += "&rows=100";
+            urlString += "&form=" + startDateValue;
+            urlString += "&to=" + endDateValue;
 
-        LocalDate startDate = LocalDate.now();
-        LocalDate endDate = startDate.plusYears(1);
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
+            // GET 방식으로 요청 설정
+            connection.setRequestMethod("GET");
 
-        int startDateValue = Integer.parseInt(startDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
-        int endDateValue = Integer.parseInt(endDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            // 응답 코드 확인
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 응답 데이터 읽기(한글 깨짐때문에 bufferedReader사용)
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder responseBuilder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    responseBuilder.append(line);
+                }
+                reader.close();
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(body, headers);
-        UriComponents uri = UriComponentsBuilder
-                .fromUriString("http://www.culture.go.kr")
-                .path("/openapi/rest/publicperformancedisplays/realm")
-                .queryParam("serviceKey", apiKey)
-                .queryParam("sortStdr", 1) // 정렬기준 1:등록일, 2:공연명, 3:지역
-                .queryParam("realmCode", "D000") // 분류코드 미술 : D000
-                .queryParam("cPage", 1) // 현재페이지
-                .queryParam("rows", 100) // 페이지 당 가져올 전시 수
-                .queryParam("form", startDateValue) // 전시시작일
-                .queryParam("to", endDateValue) // 전시종료일
-                .encode()
-                .build();
+                // 응답 데이터 반환
+                return responseBuilder.toString();
+            } else {
+                log.error("API 요청에 실패했습니다. 응답 코드: {}", responseCode);
+            }
+        } catch (Exception e) {
+            log.error("API 요청 중 오류가 발생했습니다.", e);
+        }
 
-        System.out.println("API URI 출력!! : " + uri.toUriString());
-        ResponseEntity<String> responseEntity = rest.exchange(uri.toUri(), HttpMethod.GET, requestEntity, String.class);
-        String response = responseEntity.getBody();
-        System.out.println("API Response: " + response);
-        return response;
+        return null;
     }
 
     public boolean listFromJsonObj(String result) {

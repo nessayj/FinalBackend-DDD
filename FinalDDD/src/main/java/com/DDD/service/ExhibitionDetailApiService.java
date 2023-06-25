@@ -3,21 +3,18 @@ package com.DDD.service;
 
 import com.DDD.dto.ExhibitionDetailDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.XML;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponents;
-import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,23 +28,40 @@ public class ExhibitionDetailApiService {
     private String apiKey;
 
     public String ExhibitionDetailApi(@RequestParam Integer seq) {
+        try {
+            // API 요청 URL 생성
+            String urlString = "http://www.culture.go.kr/openapi/rest/publicperformancedisplays/d/";
+            urlString += "?serviceKey=" + URLEncoder.encode(apiKey, "UTF-8");
+            urlString += "&seq=" + seq;
 
-        RestTemplate rest = new RestTemplate();
-        HttpHeaders headers = new HttpHeaders();
-        String body = " ";
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-        HttpEntity<String> requestEntity = new HttpEntity<String>(body, headers);
-        UriComponents uri = UriComponentsBuilder
-                .fromUriString("http://www.culture.go.kr")
-                .path("/openapi/rest/publicperformancedisplays/d/")
-                .queryParam("serviceKey", apiKey)
-                .queryParam("seq", seq)
-                .encode()
-                .build();
-        System.out.println("API URI 출력!! : " + uri.toUriString());
-        ResponseEntity<String> responseEntity = rest.exchange(uri.toUri(), HttpMethod.GET, requestEntity, String.class);
-        String response = responseEntity.getBody();
-        return response;
+            // GET 방식으로 요청 설정
+            connection.setRequestMethod("GET");
+
+            // 응답 코드 확인
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                // 응답 데이터 읽기(한글깨짐때문에 bufferedReader사용)
+                BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                StringBuilder responseBuilder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    responseBuilder.append(line);
+                }
+                reader.close();
+
+                // 응답 데이터 반환
+                return responseBuilder.toString();
+            } else {
+                log.error("API 요청에 실패했습니다. 응답 코드: {}", responseCode);
+            }
+        } catch (Exception e) {
+            log.error("API 요청 중 오류가 발생했습니다.", e);
+        }
+
+        return null;
     }
 
     public List<ExhibitionDetailDTO> detailFromJsonObj(String result) {
