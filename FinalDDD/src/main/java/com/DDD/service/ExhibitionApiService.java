@@ -100,7 +100,19 @@ public class ExhibitionApiService {
             String convertedTitle = convertHtmlEntities(title);
             item.put("title", convertedTitle);
 
+            // 데이터 가공 및 엔티티 생성
+            String startDateString = String.valueOf(item.getInt("startDate"));
+            String endDateString = String.valueOf(item.getInt("endDate"));
+
+            DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyyMMdd");
+            DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+            LocalDate parsedStartDate = LocalDate.parse(startDateString, inputFormatter);
+            LocalDate parsedEndDate = LocalDate.parse(endDateString, inputFormatter);
+
             Exhibitions exhibitions = new Exhibitions(item);
+            exhibitions.setStartDate(parsedStartDate.format(outputFormatter));
+            exhibitions.setEndDate(parsedEndDate.format(outputFormatter));
             exhibitionsRepository.save(exhibitions);
         }
         System.out.println("DB 저장 완료 :)!!");

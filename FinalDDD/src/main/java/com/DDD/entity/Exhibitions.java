@@ -22,10 +22,10 @@ public class Exhibitions {
     private String exhibitName; // 전시명
 
     @Column(name="start_date")
-    private int startDate; // 전시시작일
+    private String startDate; // 전시시작일
 
     @Column(name="end_date")
-    private int endDate; // 전시마감일
+    private String endDate; // 전시마감일
 
     @Column(name="location")
     private String exhibitLocation; // 전시장소
@@ -40,8 +40,8 @@ public class Exhibitions {
     public Exhibitions (JSONObject item) {
         this.exhibitNo = item.getLong("seq");
         this.exhibitName = item.getString("title");
-        this.startDate = item.getInt("startDate");
-        this.endDate = item.getInt("endDate");
+        this.startDate = Integer.toString(item.getInt("startDate")); // int를 String으로 변환
+        this.endDate = Integer.toString(item.getInt("endDate"));
         this.exhibitLocation = item.getString("place");
         this.imgUrl = item.getString("thumbnail");
         this.region = item.getString("area");
