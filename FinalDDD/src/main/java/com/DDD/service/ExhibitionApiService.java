@@ -94,10 +94,25 @@ public class ExhibitionApiService {
         // DB에 저장
         for (int i = 0; i < perforListArr.length(); i++) {
             JSONObject item = perforListArr.getJSONObject(i);
+
+            // HTML 엔티티 코드 변환
+            String title = item.getString("title");
+            String convertedTitle = convertHtmlEntities(title);
+            item.put("title", convertedTitle);
+
             Exhibitions exhibitions = new Exhibitions(item);
             exhibitionsRepository.save(exhibitions);
         }
         System.out.println("DB 저장 완료 :)!!");
         return true;
+    }
+    // HTML ENTITY코드로 변환하기위해 추가
+    private String convertHtmlEntities(String text) {
+        text = text.replace("&amp;", "&")
+                .replace("&lt;", "<")
+                .replace("&gt;", ">")
+                .replace("&quot;", "\"")
+                .replace("&#39;", "'");
+        return text;
     }
 }

@@ -19,13 +19,14 @@ import java.util.List;
 @Transactional
 @Slf4j
 @RequestMapping(value = "/exhibitions")
+@CrossOrigin("http://localhost:3000")
 public class ExhibitionsController {
     private final ExhibitionApiService exhibitionApiService;
     private final ExhibitionDetailApiService exhibitionDetailApiService;
     private final ExhibitionService exhibitionService;
 
 
-    // 전시목록 API 불러오기
+    // 전시목록 API DB저장
     @GetMapping("/list")
     public ResponseEntity<Boolean> getExhibitApiList() {
         boolean result = false;
@@ -41,6 +42,7 @@ public class ExhibitionsController {
         return exhibitionDetailApiService.detailFromJsonObj(result);
     }
 
+    // API에서 불러온 전시정보 DB저장 후 DB에서 불러오기
     @GetMapping("/dbList")
     public ResponseEntity<List<ExhibitionsDTO>> getExhibitionDBList() {
         List<ExhibitionsDTO> list = exhibitionService.getExhibitionDBList();

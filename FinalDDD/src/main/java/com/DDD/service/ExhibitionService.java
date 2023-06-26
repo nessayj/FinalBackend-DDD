@@ -30,6 +30,7 @@ public class ExhibitionService {
             exhibitionsDTO.setEndDate(e.getEndDate());  // 전시 마감일
             exhibitionsDTO.setExhibitLocation(e.getExhibitLocation()); // 전시장
             exhibitionsDTO.setImgUrl(e.getImgUrl()); // 전시 포스터
+            exhibitionsDTO.setRegion(e.getRegion()); // 전시지역
             exhibitionsDTOS.add(exhibitionsDTO);
         }
         return exhibitionsDTOS;

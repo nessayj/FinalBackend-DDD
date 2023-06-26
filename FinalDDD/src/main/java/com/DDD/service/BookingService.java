@@ -41,8 +41,8 @@ public class BookingService {
         booking.setMember(member.get());
 
         // 전시엔티티 불러와서 넣기
-        List<Exhibitions> exhibitions = (List<Exhibitions>) exhibitionsRepository.findByExhibitNo(Long.parseLong(exhibitNo));
-        booking.setExhibitions(exhibitions.get(0));
+        Exhibitions exhibition = exhibitionsRepository.findByExhibitNo(Long.parseLong(exhibitNo));
+        booking.setExhibitions(exhibition);
 
         try {
             bookingRepository.save(booking);
@@ -50,8 +50,5 @@ public class BookingService {
         } catch (Exception e) {
             return false;
         }
-
-
-
     }
 }
