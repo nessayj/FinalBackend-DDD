@@ -44,6 +44,19 @@ public class FreeBoardController {
         return new ResponseEntity(freeBoardService.selectBoardOne(boardNo), HttpStatus.OK);
     }
 
+    // 게시글 수정(최종)
+    @PutMapping("/{boardNo}")
+    public ResponseEntity<Boolean> editBoards(@PathVariable Long boardNo, @RequestBody FreeBoardDto freeBoardDto) {
+        boolean result = freeBoardService.updateBoards(boardNo, freeBoardDto);
+        if (result) {
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
+
 
     // 카테고리별 자유게시판 목록 조회
     @GetMapping("/{category}")

@@ -78,6 +78,27 @@ public class FreeBoardService {
         return freeboardDto;
     }
 
+    // 게시글 수정
+    public boolean updateBoards(Long boardNo, FreeBoardDto freeBoardDto) {
+        FreeBoard freeBoard = freeBoardRepository.findById(boardNo)
+                .orElseThrow(() -> new EntityNotFoundException("해당 게시물을 찾을 수 없습니다."));
+
+        System.out.println("freeBoard.getAuthor().getNickname(): " + freeBoard.getAuthor().getNickname()); // 닉네임 값 제대로 들어오는지 확인
+
+        // 게시글 정보 업데이트
+        freeBoard.setCategory(freeBoardDto.getCategory());
+        freeBoard.setRegion(freeBoardDto.getRegion());
+        freeBoard.setTitle(freeBoardDto.getTitle());
+        freeBoard.setImage(freeBoardDto.getImage());
+        freeBoard.setContents(freeBoardDto.getContents());
+
+        // 게시글 저장
+        freeBoardRepository.save(freeBoard);
+
+        return true;
+    }
+
+
 
 
     // 카테고리별 게시판 조회

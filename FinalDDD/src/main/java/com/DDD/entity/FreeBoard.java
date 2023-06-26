@@ -1,10 +1,8 @@
 package com.DDD.entity;
 
 import com.DDD.dto.FreeBoardDto;
-import jdk.jfr.Timestamp;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
-import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
