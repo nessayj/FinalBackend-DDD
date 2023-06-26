@@ -59,6 +59,15 @@ public class FreeBoardService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시물을 찾을 수 없습니다."));
 
 
+        // 조회수 증가
+        if (freeBoard.getViews() == null) {
+            freeBoard.setViews(1);
+        } else {
+            freeBoard.setViews(freeBoard.getViews() + 1);
+        }
+        freeBoardRepository.save(freeBoard);
+
+
         FreeBoardDto freeboardDto = new FreeBoardDto();
         freeboardDto.setBoardNo(freeBoard.getBoardNo());
         freeboardDto.setAuthor(freeBoard.getAuthor().getNickname());
@@ -69,14 +78,15 @@ public class FreeBoardService {
         freeboardDto.setImage(freeBoard.getImage());
         freeboardDto.setWriteDate(freeBoard.getWriteDate());
 
+        // 프로필 이미지 설정 추가
+        freeboardDto.setProfileImg(freeBoard.getAuthor().getProfileImg());
 
 
-        if (freeBoard != null && freeboardDto != null) { // 조회수 설정 구간
-            freeboardDto.setViews(freeboardDto.getViews());
-        }
 
         return freeboardDto;
     }
+
+
 
     // 게시글 수정(최종) + 작성자 정보 예외처리 추가
     public boolean updateBoards(Long boardNo, FreeBoardDto freeBoardDto, Long id) {
