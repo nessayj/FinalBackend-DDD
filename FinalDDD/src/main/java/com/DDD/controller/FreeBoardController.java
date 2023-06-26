@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
+import java.security.Principal;
 import java.util.List;
 import java.util.Map;
 
@@ -44,14 +46,47 @@ public class FreeBoardController {
         return new ResponseEntity(freeBoardService.selectBoardOne(boardNo), HttpStatus.OK);
     }
 
-    // 게시글 수정(최종)
+    // 게시글 수정(최종) + 작성자 정보 예외처리 추가
     @PutMapping("/{boardNo}")
-    public ResponseEntity<Boolean> editBoards(@PathVariable Long boardNo, @RequestBody FreeBoardDto freeBoardDto) {
-        boolean result = freeBoardService.updateBoards(boardNo, freeBoardDto);
-        if (result) {
-            return new ResponseEntity<>(true, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+    public ResponseEntity<Boolean> editBoards(@PathVariable Long boardNo, @RequestBody FreeBoardDto freeBoardDto, Principal principal) {
+
+        // 사용자 정보 가져오기
+        String id = principal.getName(); // id(member Pk)의 이름을 문자열로 반환
+
+        try {
+            boolean result = freeBoardService.updateBoards(boardNo, freeBoardDto, Long.parseLong(id));
+
+            if (result) {
+                return new ResponseEntity<>(true, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+            }
+        } catch (EntityNotFoundException e) { // 게시물 존재 여부에 따른 예외처리
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) { // 작성자 일치 여부에 따른 예외처리
+            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    // 게시글 삭제
+    @DeleteMapping("/{boardNo}")
+    public ResponseEntity<Boolean> delBoards(@PathVariable Long boardNo, Principal principal) {
+
+        // 사용자 정보 가져오기
+        String id = principal.getName();
+
+        try {
+            boolean result = freeBoardService.deleteBoards(boardNo, Long.parseLong(id));
+
+            if (result) {
+                return new ResponseEntity<>(true, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+            }
+        } catch (EntityNotFoundException e) {  // 게시물 존재여부에 따른 예외처리문
+            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) { // 작성자 일치여부에 따른 예외처리문
+            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
         }
     }
 

@@ -78,12 +78,17 @@ public class FreeBoardService {
         return freeboardDto;
     }
 
-    // 게시글 수정
-    public boolean updateBoards(Long boardNo, FreeBoardDto freeBoardDto) {
+    // 게시글 수정(최종) + 작성자 정보 예외처리 추가
+    public boolean updateBoards(Long boardNo, FreeBoardDto freeBoardDto, Long id) {
         FreeBoard freeBoard = freeBoardRepository.findById(boardNo)
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시물을 찾을 수 없습니다."));
 
         System.out.println("freeBoard.getAuthor().getNickname(): " + freeBoard.getAuthor().getNickname()); // 닉네임 값 제대로 들어오는지 확인
+
+        // 작성자 확인
+        if (!freeBoard.getAuthor().getId().equals(id)) {
+            throw new IllegalArgumentException("작성자만 게시글을 수정할 수 있습니다.");
+        }
 
         // 게시글 정보 업데이트
         freeBoard.setCategory(freeBoardDto.getCategory());
@@ -95,6 +100,21 @@ public class FreeBoardService {
         // 게시글 저장
         freeBoardRepository.save(freeBoard);
 
+        return true;
+    }
+
+
+    // 게시글 삭제(최종)
+    public boolean deleteBoards(Long boardNo, Long id) {
+        FreeBoard freeBoard = freeBoardRepository.findById(boardNo)
+                .orElseThrow(() -> new EntityNotFoundException("해당 게시물을 찾을 수 없습니다."));
+
+        // 작성자 확인
+        if (!freeBoard.getAuthor().getId().equals(id)) {
+            throw new IllegalArgumentException("작성자만 게시글을 삭제할 수 있습니다.");
+        }
+
+        freeBoardRepository.delete(freeBoard);
         return true;
     }
 
