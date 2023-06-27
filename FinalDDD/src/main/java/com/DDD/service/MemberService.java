@@ -40,7 +40,9 @@ public class MemberService {
         if (memberOptional.isPresent()) {
             Member member = memberOptional.get();
             MemberDto memberDto = new MemberDto();
+
             memberDto.setEmail(member.getEmail());
+            memberDto.setEmail(String.valueOf(member.getId()));
             memberDto.setName(member.getName());
             memberDto.setTel(member.getTel());
             memberDto.setNickname(member.getNickname());

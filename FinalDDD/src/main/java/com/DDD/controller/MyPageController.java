@@ -22,12 +22,12 @@ import java.util.Map;
 public class MyPageController {
     private final MemberService memberService;
 
-    @GetMapping("/getInfo")
-    public ResponseEntity<List<MemberDto>> getInfo(@RequestBody Map<String, String> infoData) {
-        String email = infoData.get("email");
+    @GetMapping("/info")
+    public ResponseEntity<List<MemberDto>> getInfo(@RequestParam("email") String email) {
         List<MemberDto> list = memberService.getMemberInfo(email);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
+
 
     @PostMapping("/changeNickname")
     public ResponseEntity<Boolean> changeNickname(@RequestBody Map<String, String> infoData) {
