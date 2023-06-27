@@ -145,9 +145,11 @@ public class FreeBoardService {
 //            freeBoardDto.setContents(freeBoard.getContents()); 내용 제외
             freeBoardDto.setWriteDate(freeBoard.getWriteDate());
 
-            if (freeBoard != null && freeBoardDto != null) { // 조회수 수정사항
-                freeBoardDto.setViews(freeBoardDto.getViews());
-            }
+//            if (freeBoard != null && freeBoardDto != null) { // 조회수 수정사항
+//                freeBoardDto.setViews(freeBoardDto.getViews());
+//            }
+
+            freeBoardDto.setViews(freeBoard.getViews()); // 조회수 현재값으로 재수정
 
 
             Member author = freeBoard.getAuthor(); // nickName 을 fk로 갖고 오기 위해

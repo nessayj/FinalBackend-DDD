@@ -18,6 +18,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/boardList") // CRUD 작업이 필요할 시 GetMapping 보다는 requestMapping 으로
+@CrossOrigin(origins = "http://localhost:3000")
 public class FreeBoardController {
     @Autowired
     private final FreeBoardService freeBoardService;
@@ -96,6 +97,7 @@ public class FreeBoardController {
     // 카테고리별 자유게시판 목록 조회
     @GetMapping("/{category}")
     public ResponseEntity<List<FreeBoardDto>> getFreeBoardsByCategory(@PathVariable("category") String category) {
+        log.info("Received request to get free boards by category: {}", category);
         List<FreeBoardDto> freeBoardList = freeBoardService.getFreeBoardsByCategory(category);
         if (!freeBoardList.isEmpty()) {
             return new ResponseEntity<>(freeBoardList, HttpStatus.OK);

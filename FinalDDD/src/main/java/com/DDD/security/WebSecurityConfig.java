@@ -41,6 +41,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/members/**", "/exhibitions/**", "/booking/**").permitAll()
+                .antMatchers("/boardList/**").permitAll()
                 .antMatchers("/login/**").permitAll()
                 .anyRequest().authenticated()
 
