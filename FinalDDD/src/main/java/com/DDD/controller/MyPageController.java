@@ -18,12 +18,14 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/myPage")
+@RequestMapping("/mypage")
+@CrossOrigin(origins = "http://localhost:3000")
 public class MyPageController {
     private final MemberService memberService;
 
     @GetMapping("/info")
     public ResponseEntity<List<MemberDto>> getInfo(@RequestParam("email") String email) {
+        System.out.println("연결받음");
         List<MemberDto> list = memberService.getMemberInfo(email);
         return new ResponseEntity<>(list, HttpStatus.OK);
     }

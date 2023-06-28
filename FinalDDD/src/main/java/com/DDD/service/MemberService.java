@@ -42,7 +42,7 @@ public class MemberService {
             MemberDto memberDto = new MemberDto();
 
             memberDto.setEmail(member.getEmail());
-            memberDto.setEmail(String.valueOf(member.getId()));
+            memberDto.setId(Long.valueOf(member.getId()));
             memberDto.setName(member.getName());
             memberDto.setTel(member.getTel());
             memberDto.setNickname(member.getNickname());
