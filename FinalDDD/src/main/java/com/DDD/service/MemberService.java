@@ -5,8 +5,10 @@ import com.DDD.entity.Member;
 import com.DDD.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -33,33 +35,27 @@ public class MemberService {
     }
 
     // 회원 정보 조회
-    public List<MemberDto> getMemberInfo(String email) {
-        List<MemberDto> memberDtos = new ArrayList<>();
-        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+    public MemberDto getMemberInfo(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        if (memberOptional.isPresent()) {
-            Member member = memberOptional.get();
-            MemberDto memberDto = new MemberDto();
+        MemberDto memberDto = new MemberDto();
 
-            memberDto.setEmail(member.getEmail());
-            memberDto.setId(Long.valueOf(member.getId()));
-            memberDto.setName(member.getName());
-            memberDto.setTel(member.getTel());
-            memberDto.setNickname(member.getNickname());
-            memberDto.setInstagram(member.getInstagram());
-            memberDto.setIntroduce(member.getIntroduce());
-            memberDto.setBackgroundImg(member.getBackgroundImg());
-            memberDto.setProfileImg(member.getProfileImg());
+        memberDto.setEmail(member.getEmail());
+        memberDto.setId(Long.valueOf(member.getId()));
+        memberDto.setName(member.getName());
+        memberDto.setTel(member.getTel());
+        memberDto.setNickname(member.getNickname());
+        memberDto.setInstagram(member.getInstagram());
+        memberDto.setIntroduce(member.getIntroduce());
+        memberDto.setBackgroundImg(member.getBackgroundImg());
+        memberDto.setProfileImg(member.getProfileImg());
 
-            memberDtos.add(memberDto);
-        }
-
-        return memberDtos;
+        return memberDto;
     }
 
     // 닉네임 변경
-    public boolean newNickname(String email, String nickname) {
-        return memberRepository.findByEmail(email)
+    public boolean newNickname(Long id, String nickname) {
+        return memberRepository.findById(id)
                 .map(member -> {
                     member.setNickname(nickname);
                     Member savedMember = memberRepository.save(member);

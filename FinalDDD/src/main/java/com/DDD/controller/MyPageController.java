@@ -18,24 +18,23 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/mypage")
+@RequestMapping("/mypage/{memberId}")
 @CrossOrigin(origins = "http://localhost:3000")
 public class MyPageController {
     private final MemberService memberService;
 
-    @GetMapping("/info")
-    public ResponseEntity<List<MemberDto>> getInfo(@RequestParam("email") String email) {
-        System.out.println("연결받음");
-        List<MemberDto> list = memberService.getMemberInfo(email);
-        return new ResponseEntity<>(list, HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<MemberDto> getInfo(@PathVariable Long memberId) {
+        MemberDto member = memberService.getMemberInfo(memberId);
+        return new ResponseEntity<>(member, HttpStatus.OK);
     }
 
 
-    @PostMapping("/changeNickname")
+    @PostMapping("/nickname")
     public ResponseEntity<Boolean> changeNickname(@RequestBody Map<String, String> infoData) {
-        String email = infoData.get("email");
+        Long id = Long.valueOf(infoData.get("id"));
         String nickname = infoData.get("nickname");
-        return ResponseEntity.ok(memberService.newNickname(email, nickname));
+        return ResponseEntity.ok(memberService.newNickname(id, nickname));
     }
 
     @PostMapping("/changeName")
