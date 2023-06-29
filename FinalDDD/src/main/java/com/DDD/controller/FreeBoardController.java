@@ -25,13 +25,14 @@ public class FreeBoardController {
 
     // 게시글 작성
     @PostMapping("/write")
-    public ResponseEntity<Boolean> boardWrite(@RequestBody Map<String, String> data){
-        String author = data.get("author");
-        String category = data.get("category");
-        String region = data.get("region");
-        String title =  data.get("title");
-        String image =  data.get("image");
-        String contents = data.get("contents");
+    public ResponseEntity<Boolean> boardWrite(@RequestBody FreeBoardDto freeBoardDto, Principal principal) {
+        String category = freeBoardDto.getCategory();
+        String region = freeBoardDto.getRegion();
+        String title = freeBoardDto.getTitle();
+        String image = freeBoardDto.getImage();
+        String contents = freeBoardDto.getContents();
+
+        String author = freeBoardDto.getAuthor(); // FreeBoardDto 에서 작성자 정보 가져오기
 
         boolean result = freeBoardService.createBoards(author, category, region, title, image, contents);
         if (result) {
@@ -40,6 +41,31 @@ public class FreeBoardController {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
     }
+
+
+
+
+//    // 게시글 작성(2차 작업-작성자넣은상태)
+//    @PostMapping("/write")
+//    public ResponseEntity<Boolean> boardWrite(@RequestBody Map<String, String> data){
+//        String author = data.get("author");
+//        String category = data.get("category");
+//        String region = data.get("region");
+//        String title =  data.get("title");
+//        String image =  data.get("image");
+//        String contents = data.get("contents");
+//
+//        boolean result = freeBoardService.createBoards(author, category, region, title, image, contents);
+//
+//        if (result) {
+//            return new ResponseEntity<>(true, HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+//        }
+//    }
+
+
+
 
     // 게시글 상세 조회
     @GetMapping("/boardView/{boardNo}")
