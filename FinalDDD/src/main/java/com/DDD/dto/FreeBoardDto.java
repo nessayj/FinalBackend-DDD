@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class FreeBoardDto {  // 프론트엔드와 주고 받을 때 사용
     private Long boardNo; // 게시판 번호
     private String author; // 작성자 닉네임
-    private String email; // 회원 이메일
+    private Long id; // 회원 아이디
     private String category; // 게시판 카테고리
     private String region; // 지역 카테고리
     private String title; // 게시판 제목

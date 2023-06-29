@@ -32,9 +32,9 @@ public class FreeBoardController {
         String image = freeBoardDto.getImage();
         String contents = freeBoardDto.getContents();
 
-        String author = freeBoardDto.getAuthor(); // FreeBoardDto 에서 작성자 정보 가져오기
+        Long id = freeBoardDto.getId(); // FreeBoardDto 에서 작성자 정보 가져오기
 
-        boolean result = freeBoardService.createBoards(author, category, region, title, image, contents);
+        boolean result = freeBoardService.createBoards(id, category, region, title, image, contents);
         if (result) {
             return new ResponseEntity<>(true, HttpStatus.OK);
         } else {

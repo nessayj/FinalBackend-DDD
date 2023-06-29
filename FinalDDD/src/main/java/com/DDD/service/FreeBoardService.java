@@ -32,9 +32,10 @@ public class FreeBoardService {
     }
 
     // 게시글 작성
-    public boolean createBoards(String author, String category, String region, String title, String image, String contents) {
+    public boolean createBoards(Long id, String category, String region, String title, String image, String contents) {
         // DTO 에서 작성자 정보 가져오기
-       Optional<Member> optionalMember = memberRepository.findByNickname(author);
+       Optional<Member> optionalMember = memberRepository.findById(id);
+
 
         if (optionalMember.isEmpty()) {
             throw new UsernameNotFoundException("해당 닉네임을 가진 멤버를 찾을 수 없습니다.");
@@ -104,7 +105,8 @@ public class FreeBoardService {
         FreeBoardDto freeboardDto = new FreeBoardDto();
         freeboardDto.setBoardNo(freeBoard.getBoardNo());
         freeboardDto.setAuthor(freeBoard.getMember().getNickname());
-        freeboardDto.setEmail(freeBoard.getMember().getEmail()); // 회원 정보 할당
+//        freeboardDto.setEmail(freeBoard.getMember().getEmail()); // 회원 정보 할당
+        freeboardDto.setId(freeBoard.getMember().getId()); // 회원 정보 할당
         freeboardDto.setCategory(freeBoard.getCategory());
         freeboardDto.setRegion(freeBoard.getRegion());
         freeboardDto.setTitle(freeBoard.getTitle());
