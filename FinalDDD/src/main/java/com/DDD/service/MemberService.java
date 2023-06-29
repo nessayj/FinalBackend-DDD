@@ -66,8 +66,8 @@ public class MemberService {
     }
 
     // 이름 변경
-    public boolean newName(String email, String name) {
-        return memberRepository.findByEmail(email)
+    public boolean newName(Long id, String name) {
+        return memberRepository.findById(id)
                 .map(member -> {
                     member.setName(name);
                     Member savedMember = memberRepository.save(member);
@@ -78,8 +78,8 @@ public class MemberService {
     }
 
     // 연락처 변경
-    public boolean newTel(String email, String tel) {
-        return memberRepository.findByEmail(email)
+    public boolean newTel(Long id, String tel) {
+        return memberRepository.findById(id)
                 .map(member -> {
                     member.setTel(tel);
                     Member savedMember = memberRepository.save(member);
@@ -89,8 +89,8 @@ public class MemberService {
                 .orElse(false);
     }
     // 인스타그램 변경
-    public boolean newInstagram(String email, String instagram) {
-        return memberRepository.findByEmail(email)
+    public boolean newInstagram(Long id, String instagram) {
+        return memberRepository.findById(id)
                 .map(member -> {
                     member.setInstagram(instagram);
                     Member savedMember = memberRepository.save(member);
@@ -100,8 +100,8 @@ public class MemberService {
                 .orElse(false);
     }
     // 소개글 변경
-    public boolean newIntroduce(String email, String introduce) {
-        return memberRepository.findByEmail(email)
+    public boolean newIntroduce(Long id, String introduce) {
+        return memberRepository.findById(id)
                 .map(member -> {
                     member.setIntroduce(introduce);
                     Member savedMember = memberRepository.save(member);
