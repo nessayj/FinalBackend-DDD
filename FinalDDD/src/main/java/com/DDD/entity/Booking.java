@@ -23,13 +23,19 @@ public class Booking {
     @JoinColumn(name = "member_id") // 회원번호(FK)
     private Member member;
 
-//    @OneToOne // 결제와 일대일매핑
-//    @JoinColumn
 
     @Column(name = "booking_date")
     private LocalDateTime bookingDate; // 예매일
     @Column(name = "visit_date")
     private LocalDateTime visitDate; // 전시관람일
+
+    public Member getMember() {
+        return member;
+    }
+
+    public Exhibitions getExhibitions() {
+        return exhibitions;
+    }
 
 
 }

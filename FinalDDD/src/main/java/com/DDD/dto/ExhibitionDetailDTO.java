@@ -19,7 +19,7 @@ public class ExhibitionDetailDTO {
     private int endDate; // 전시 마감일
     private String exhibitExplain; // 전시회설명1
     private String exhibitExplain2; // 전시회설명2
-    private String exhibitPrice; // 전시회 가격
+    private Object exhibitPrice; // 전시회가격
     private String imgUrl; // 전시회 포스터
     private String exhibitLocation; // 전시장
     private String phoneNo; // 전시회 전화번호
@@ -36,7 +36,13 @@ public class ExhibitionDetailDTO {
         this.endDate = item.getInt("endDate");
         this.exhibitExplain = item.getString("contents1");
         this.exhibitExplain2 = item.getString("contents2");
-        this.exhibitPrice = item.getString("price");
+        // 가격이 어떤건 int만 들어가있는 경우가 있어서 경우의 수 처리
+        if (item.get("price") instanceof Integer) {
+            this.exhibitPrice = item.getInt("price");
+        } else {
+            this.exhibitPrice = item.getString("price");
+        }
+
         this.imgUrl = item.getString("imgUrl");
         this.exhibitLocation = item.getString("place");
         this.phoneNo = item.getString("phone");

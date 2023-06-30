@@ -51,7 +51,7 @@ public class ExhibitionDetailApiService {
                     responseBuilder.append(line);
                 }
                 reader.close();
-
+                System.out.println("상세정보주소 : " + urlString);
                 // 응답 데이터 반환
                 return responseBuilder.toString();
             } else {
@@ -83,7 +83,6 @@ public class ExhibitionDetailApiService {
             // DTO저장
             ExhibitionDetailDTO exhibitionDetailDTO = new ExhibitionDetailDTO(item);
             list.add(exhibitionDetailDTO);
-
             System.out.println("상세정보 불러오기 성공!! :)😍😍😍");
         } catch (Exception e) {
             e.printStackTrace();

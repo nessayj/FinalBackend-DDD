@@ -2,9 +2,11 @@ package com.DDD.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.DDD.dto.BookingDTO;
 import com.DDD.entity.Booking;
 import com.DDD.entity.Exhibitions;
 import com.DDD.entity.Member;
@@ -29,6 +31,7 @@ public class BookingService {
     // 예매, 전시일표시
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    //  예매하기
     public boolean bookTicket(String exhibitNo, String id, String bookingDate, String visitDate ) {
         Booking booking = new Booking();
 
@@ -50,5 +53,21 @@ public class BookingService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    // 예매조회
+    public List<BookingDTO> FindTicket(String id) {
+        List<BookingDTO> bookingDTOS = new ArrayList<>();
+        List<Booking> bookingList = bookingRepository.findAll();
+        for(Booking e : bookingList) {
+            BookingDTO bookingDTO = new BookingDTO();
+            bookingDTO.setBookingNo(e.getBookingId());
+            bookingDTO.setExhibitNo(e.getExhibitions().getExhibitNo());
+            bookingDTO.setId(e.getMember().getId());
+            bookingDTO.setMemberEmail(e.getMember().getEmail());
+            bookingDTO.setExhibitName(e.getExhibitions().getExhibitName());
+            bookingDTOS.add(bookingDTO);
+        }
+        return bookingDTOS;
     }
 }
