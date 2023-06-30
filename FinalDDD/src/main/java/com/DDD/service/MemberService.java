@@ -5,8 +5,10 @@ import com.DDD.entity.Member;
 import com.DDD.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -33,31 +35,27 @@ public class MemberService {
     }
 
     // 회원 정보 조회
-    public List<MemberDto> getMemberInfo(String email) {
-        List<MemberDto> memberDtos = new ArrayList<>();
-        Optional<Member> memberOptional = memberRepository.findByEmail(email);
+    public MemberDto getMemberInfo(Long id) {
+        Member member = memberRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        if (memberOptional.isPresent()) {
-            Member member = memberOptional.get();
-            MemberDto memberDto = new MemberDto();
-            memberDto.setEmail(member.getEmail());
-            memberDto.setName(member.getName());
-            memberDto.setTel(member.getTel());
-            memberDto.setNickname(member.getNickname());
-            memberDto.setInstagram(member.getInstagram());
-            memberDto.setIntroduce(member.getIntroduce());
-            memberDto.setBackgroundImg(member.getBackgroundImg());
-            memberDto.setProfileImg(member.getProfileImg());
+        MemberDto memberDto = new MemberDto();
 
-            memberDtos.add(memberDto);
-        }
+        memberDto.setEmail(member.getEmail());
+        memberDto.setId(Long.valueOf(member.getId()));
+        memberDto.setName(member.getName());
+        memberDto.setTel(member.getTel());
+        memberDto.setNickname(member.getNickname());
+        memberDto.setInstagram(member.getInstagram());
+        memberDto.setIntroduce(member.getIntroduce());
+        memberDto.setBackgroundImg(member.getBackgroundImg());
+        memberDto.setProfileImg(member.getProfileImg());
 
-        return memberDtos;
+        return memberDto;
     }
 
     // 닉네임 변경
-    public boolean newNickname(String email, String nickname) {
-        return memberRepository.findByEmail(email)
+    public boolean newNickname(Long id, String nickname) {
+        return memberRepository.findById(id)
                 .map(member -> {
                     member.setNickname(nickname);
                     Member savedMember = memberRepository.save(member);
@@ -68,8 +66,8 @@ public class MemberService {
     }
 
     // 이름 변경
-    public boolean newName(String email, String name) {
-        return memberRepository.findByEmail(email)
+    public boolean newName(Long id, String name) {
+        return memberRepository.findById(id)
                 .map(member -> {
                     member.setName(name);
                     Member savedMember = memberRepository.save(member);
@@ -80,8 +78,8 @@ public class MemberService {
     }
 
     // 연락처 변경
-    public boolean newTel(String email, String tel) {
-        return memberRepository.findByEmail(email)
+    public boolean newTel(Long id, String tel) {
+        return memberRepository.findById(id)
                 .map(member -> {
                     member.setTel(tel);
                     Member savedMember = memberRepository.save(member);
@@ -91,8 +89,8 @@ public class MemberService {
                 .orElse(false);
     }
     // 인스타그램 변경
-    public boolean newInstagram(String email, String instagram) {
-        return memberRepository.findByEmail(email)
+    public boolean newInstagram(Long id, String instagram) {
+        return memberRepository.findById(id)
                 .map(member -> {
                     member.setInstagram(instagram);
                     Member savedMember = memberRepository.save(member);
@@ -102,8 +100,8 @@ public class MemberService {
                 .orElse(false);
     }
     // 소개글 변경
-    public boolean newIntroduce(String email, String introduce) {
-        return memberRepository.findByEmail(email)
+    public boolean newIntroduce(Long id, String introduce) {
+        return memberRepository.findById(id)
                 .map(member -> {
                     member.setIntroduce(introduce);
                     Member savedMember = memberRepository.save(member);

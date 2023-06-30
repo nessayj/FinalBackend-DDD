@@ -18,50 +18,59 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/myPage")
+@RequestMapping("/mypage/{memberId}")
+@CrossOrigin(origins = "http://localhost:3000")
 public class MyPageController {
     private final MemberService memberService;
 
-    @GetMapping("/getInfo")
-    public ResponseEntity<List<MemberDto>> getInfo(@RequestBody Map<String, String> infoData) {
-        String email = infoData.get("email");
-        List<MemberDto> list = memberService.getMemberInfo(email);
-        return new ResponseEntity<>(list, HttpStatus.OK);
+    @GetMapping
+    public ResponseEntity<MemberDto> getInfo(@PathVariable Long memberId) {
+        MemberDto member = memberService.getMemberInfo(memberId);
+        return new ResponseEntity<>(member, HttpStatus.OK);
     }
 
-    @PostMapping("/changeNickname")
+    // 닉네임 변경하기
+    @PostMapping("/nickname")
     public ResponseEntity<Boolean> changeNickname(@RequestBody Map<String, String> infoData) {
-        String email = infoData.get("email");
+        Long id = Long.valueOf(infoData.get("id"));
         String nickname = infoData.get("nickname");
-        return ResponseEntity.ok(memberService.newNickname(email, nickname));
+        return ResponseEntity.ok(memberService.newNickname(id, nickname));
     }
 
-    @PostMapping("/changeName")
+    // 닉네임 중복체크
+    @PostMapping("/nicknamedup")
+    public ResponseEntity<Boolean> nicknameDup(@RequestBody Map<String, String> nicknameDupData) {
+        String nickname = nicknameDupData.get("nickname");
+        boolean isDuplicate = memberService.nicknameDupCk(nickname);
+        return ResponseEntity.ok(isDuplicate);
+    }
+
+    @PostMapping("/name")
     public ResponseEntity<Boolean> changeName(@RequestBody Map<String, String> infoData) {
-        String email = infoData.get("email");
+        Long id = Long.valueOf(infoData.get("id"));
         String name = infoData.get("name");
-        return ResponseEntity.ok(memberService.newName(email, name));
+        return ResponseEntity.ok(memberService.newName(id, name));
     }
 
-    @PostMapping("/changeTel")
+    @PostMapping("/tel")
     public ResponseEntity<Boolean> changeTel(@RequestBody Map<String, String> infoData) {
-        String email = infoData.get("email");
+        Long id = Long.valueOf(infoData.get("id"));
         String tel = infoData.get("tel");
-        return ResponseEntity.ok(memberService.newTel(email, tel));
+        return ResponseEntity.ok(memberService.newTel(id, tel));
     }
 
-    @PostMapping("/changeInstagram")
+    @PostMapping("/instagram")
     public ResponseEntity<Boolean> changeInstagram(@RequestBody Map<String, String> infoData) {
-        String email = infoData.get("email");
+        Long id = Long.valueOf(infoData.get("id"));
         String instagram = infoData.get("instagram");
-        return ResponseEntity.ok(memberService.newInstagram(email, instagram));
+        return ResponseEntity.ok(memberService.newInstagram(id, instagram));
     }
 
-    @PostMapping("/changeIntroduce")
+    @PostMapping("/introduce")
     public ResponseEntity<Boolean> changeIntroduce(@RequestBody Map<String, String> infoData) {
-        String email = infoData.get("email");
+        Long id = Long.valueOf(infoData.get("id"));
         String introduce = infoData.get("introduce");
-        return ResponseEntity.ok(memberService.newIntroduce(email, introduce));
+        return ResponseEntity.ok(memberService.newIntroduce(id, introduce));
     }
 
 //    @PostMapping("/memberdelete")

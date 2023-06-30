@@ -15,5 +15,6 @@ public class TokenDto {
     private String accessToken;
     private String refreshToken;
     private Long tokenExpiresIn;
+    private Long memberId; // 추가: member의 id를 담기 위한 필드
 }
 

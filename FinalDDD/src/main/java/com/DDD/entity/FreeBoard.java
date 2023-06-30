@@ -21,10 +21,11 @@ public class FreeBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardNo; // Primary Key : 게시판 번호
 
-    @ManyToOne(fetch = FetchType.LAZY) // N:1 다대일 관계
+//    @ManyToOne(fetch = FetchType.LAZY) // N:1 다대일 관계
+    @ManyToOne(fetch = FetchType.EAGER) // N:1 다대일 관계 -- 변경사항
     @JoinColumn(name = "author_id",  referencedColumnName = "member_id", nullable = false)
     // author 은 게시판 테이블의 작성자, 'referencedColumnName' 는 참조 테이블로 회원정보의 PK를 참조함
-    private Member author; // 클래스에 대한 참조변수
+    private Member member; // 클래스에 대한 참조변수
 
     @Column(name = "board_ctg", nullable = false, length = 30) // 게시판 카테고리
     private String category;
@@ -45,7 +46,7 @@ public class FreeBoard {
 //    @Column(nullable = false)
     private Integer views;
 
-    @CreatedDate // 작성일(CreatedDate)로 해야 스키마 변경할 필요 무
+    @CreatedDate
     @Column(name = "write_date", nullable = false)
     private LocalDateTime writeDate = LocalDateTime.now();
 
@@ -56,7 +57,7 @@ public class FreeBoard {
 
     @Builder
     public FreeBoard(FreeBoardDto dto, Member member) {
-        this.author = member;
+        this.member = member;
         this.category = dto.getCategory();
         this.region = dto.getRegion();
         this.title = dto.getTitle();

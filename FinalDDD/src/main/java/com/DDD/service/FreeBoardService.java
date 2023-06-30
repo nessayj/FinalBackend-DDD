@@ -32,17 +32,20 @@ public class FreeBoardService {
     }
 
     // 게시글 작성
-    public boolean createBoards(String author, String category, String region, String title, String image, String contents) {
-        Optional<Member> optionalMember = memberRepository.findByNickname(author);
+    public boolean createBoards(Long id, String category, String region, String title, String image, String contents) {
+        // DTO 에서 작성자 정보 가져오기
+       Optional<Member> optionalMember = memberRepository.findById(id);
 
-//        if (optionalMember.isEmpty()) {
-//            throw new UsernameNotFoundException("해당 닉네임을 가진 멤버를 찾을 수 없습니다.");
-//        }
 
+        if (optionalMember.isEmpty()) {
+            throw new UsernameNotFoundException("해당 닉네임을 가진 멤버를 찾을 수 없습니다.");
+        }
+
+        // Optional 에서 멤버 가져오기
         Member member = optionalMember.get();
 
         FreeBoard freeBoard = new FreeBoard();
-        freeBoard.setAuthor(member);
+        freeBoard.setMember(member);
         freeBoard.setCategory(category);
         freeBoard.setRegion(region);
         freeBoard.setTitle(title);
@@ -53,11 +56,42 @@ public class FreeBoardService {
         return true;
     }
 
+          // 게시글 작성 재체크
+//        public void createBoards(FreeBoardDto dto) {
+//        Member member = memberRepository.findByNickname(dto.getAuthor()).orElseThrow(() -> new UsernameNotFoundException("찾을 수 없습니다."));
+//        FreeBoard freeBoard = FreeBoard.builder()
+//                .dto(dto)
+//                .member(member)
+//                .build();
+//        freeBoardRepository.save(freeBoard);
+
+
+//    // 게시글 작성(1차 작업)
+//    public boolean createBoards(String author, String category, String region, String title, String image, String contents) {
+//        Optional<Member> optionalMember = memberRepository.findByNickname(author);
+//
+////        if (optionalMember.isEmpty()) {
+////            throw new UsernameNotFoundException("해당 닉네임을 가진 멤버를 찾을 수 없습니다.");
+////        }
+//        // Optional 에서 멤버 가져오기
+//        Member member = optionalMember.get();
+//
+//        FreeBoard freeBoard = new FreeBoard();
+//        freeBoard.setAuthor(member);
+//        freeBoard.setCategory(category);
+//        freeBoard.setRegion(region);
+//        freeBoard.setTitle(title);
+//        freeBoard.setImage(image);
+//        freeBoard.setContents(contents);
+//
+//        freeBoardRepository.save(freeBoard);
+//        return true;
+//    }
+
     // 게시글 상세조회
     public FreeBoardDto selectBoardOne(Long boardNo) {
         FreeBoard freeBoard = freeBoardRepository.findById(boardNo)
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시물을 찾을 수 없습니다."));
-
 
         // 조회수 증가
         if (freeBoard.getViews() == null) {
@@ -70,7 +104,9 @@ public class FreeBoardService {
 
         FreeBoardDto freeboardDto = new FreeBoardDto();
         freeboardDto.setBoardNo(freeBoard.getBoardNo());
-        freeboardDto.setAuthor(freeBoard.getAuthor().getNickname());
+        freeboardDto.setAuthor(freeBoard.getMember().getNickname());
+//        freeboardDto.setEmail(freeBoard.getMember().getEmail()); // 회원 정보 할당
+        freeboardDto.setId(freeBoard.getMember().getId()); // 회원 정보 할당
         freeboardDto.setCategory(freeBoard.getCategory());
         freeboardDto.setRegion(freeBoard.getRegion());
         freeboardDto.setTitle(freeBoard.getTitle());
@@ -79,7 +115,7 @@ public class FreeBoardService {
         freeboardDto.setWriteDate(freeBoard.getWriteDate());
 
         // 프로필 이미지 설정 추가
-        freeboardDto.setProfileImg(freeBoard.getAuthor().getProfileImg());
+        freeboardDto.setProfileImg(freeBoard.getMember().getProfileImg());
 
 
 
@@ -93,10 +129,10 @@ public class FreeBoardService {
         FreeBoard freeBoard = freeBoardRepository.findById(boardNo)
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시물을 찾을 수 없습니다."));
 
-        System.out.println("freeBoard.getAuthor().getNickname(): " + freeBoard.getAuthor().getNickname()); // 닉네임 값 제대로 들어오는지 확인
+        System.out.println("freeBoard.getAuthor().getNickname(): " + freeBoard.getMember().getNickname()); // 닉네임 값 제대로 들어오는지 확인
 
         // 작성자 확인
-        if (!freeBoard.getAuthor().getId().equals(id)) {
+        if (!freeBoard.getMember().getId().equals(id)) {
             throw new IllegalArgumentException("작성자만 게시글을 수정할 수 있습니다.");
         }
 
@@ -120,7 +156,7 @@ public class FreeBoardService {
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시물을 찾을 수 없습니다."));
 
         // 작성자 확인
-        if (!freeBoard.getAuthor().getId().equals(id)) {
+        if (!freeBoard.getMember().getId().equals(id)) {
             throw new IllegalArgumentException("작성자만 게시글을 삭제할 수 있습니다.");
         }
 
@@ -145,12 +181,15 @@ public class FreeBoardService {
 //            freeBoardDto.setContents(freeBoard.getContents()); 내용 제외
             freeBoardDto.setWriteDate(freeBoard.getWriteDate());
 
-            if (freeBoard != null && freeBoardDto != null) { // 조회수 수정사항
-                freeBoardDto.setViews(freeBoardDto.getViews());
-            }
+//            if (freeBoard != null && freeBoardDto != null) { // 조회수 수정사항
+//                freeBoardDto.setViews(freeBoardDto.getViews());
+//            }
+
+            freeBoardDto.setViews(freeBoard.getViews()); // 조회수 현재값으로 재수정
+            System.out.println("조회수: " + freeBoard.getViews());
 
 
-            Member author = freeBoard.getAuthor(); // nickName 을 fk로 갖고 오기 위해
+            Member author = freeBoard.getMember(); // nickName 을 fk로 갖고 오기 위해
             if (author != null) {
                 MemberDto memberDto = MemberDto.fromMember(author);
                 freeBoardDto.setAuthor(memberDto.getNickname());

@@ -41,11 +41,16 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/members/**", "/exhibitions/**", "/booking/**").permitAll()
+                .antMatchers("/boardList/**").permitAll()
                 .antMatchers("/login/**").permitAll()
                 .anyRequest().authenticated()
 
                 .and()
-                .apply(new JwtSecurityConfig(tokenProvider));
+                .apply(new JwtSecurityConfig(tokenProvider))
+
+                // CORS 오류 막기위해 추가
+                .and()
+                .cors();
 
         return http.build();
     }
