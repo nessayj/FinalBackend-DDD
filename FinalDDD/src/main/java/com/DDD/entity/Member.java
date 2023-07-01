@@ -44,6 +44,9 @@ public class Member {
     @Column(nullable = false)
     private boolean isActive = true;
 
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Diary diary;
+
 //    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    private List<FreeBoard> freeBoardList = new ArrayList<>();
 

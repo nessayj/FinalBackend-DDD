@@ -23,6 +23,7 @@ import java.util.Map;
 public class MyPageController {
     private final MemberService memberService;
 
+    // 마이페이지 정보 가져오기
     @GetMapping
     public ResponseEntity<MemberDto> getInfo(@PathVariable Long memberId) {
         MemberDto member = memberService.getMemberInfo(memberId);
@@ -45,6 +46,7 @@ public class MyPageController {
         return ResponseEntity.ok(isDuplicate);
     }
 
+    // 이름 변경하기
     @PostMapping("/name")
     public ResponseEntity<Boolean> changeName(@RequestBody Map<String, String> infoData) {
         Long id = Long.valueOf(infoData.get("id"));
@@ -52,6 +54,7 @@ public class MyPageController {
         return ResponseEntity.ok(memberService.newName(id, name));
     }
 
+    // 전화번호 변경하기
     @PostMapping("/tel")
     public ResponseEntity<Boolean> changeTel(@RequestBody Map<String, String> infoData) {
         Long id = Long.valueOf(infoData.get("id"));
@@ -59,6 +62,7 @@ public class MyPageController {
         return ResponseEntity.ok(memberService.newTel(id, tel));
     }
 
+    // 인스타그램 변경하기
     @PostMapping("/instagram")
     public ResponseEntity<Boolean> changeInstagram(@RequestBody Map<String, String> infoData) {
         Long id = Long.valueOf(infoData.get("id"));
@@ -66,6 +70,7 @@ public class MyPageController {
         return ResponseEntity.ok(memberService.newInstagram(id, instagram));
     }
 
+    // 소개글 변경하기
     @PostMapping("/introduce")
     public ResponseEntity<Boolean> changeIntroduce(@RequestBody Map<String, String> infoData) {
         Long id = Long.valueOf(infoData.get("id"));

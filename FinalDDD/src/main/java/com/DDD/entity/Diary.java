@@ -1,10 +1,7 @@
 package com.DDD.entity;
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -22,7 +19,7 @@ public class Diary {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member memberId;
+    private Member member;
 
     private String regDate;
 
@@ -32,6 +29,14 @@ public class Diary {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exhibit_no")
-    private Exhibitions Exhibitions;
+    private Exhibitions exhibition;
 
+    @Builder
+    public Diary(Member member, String regDate, double rateStar, String comment, Exhibitions exhibition) {
+        this.member = member;
+        this.regDate = regDate;
+        this.rateStar = rateStar;
+        this.comment = comment;
+        this.exhibition = exhibition;
+    }
 }

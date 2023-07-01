@@ -1,5 +1,6 @@
 package com.DDD.repository;
 
+import com.DDD.entity.Diary;
 import com.DDD.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,8 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     // 이메일 전체 조회 (이메일 중복 체크)
     Optional<Member> findByEmail(String email);
+
+    Optional<Member> findByDiary(Diary diary);
 
     // 이메일 존재여부 추가함
     boolean existsByEmail(String email);
