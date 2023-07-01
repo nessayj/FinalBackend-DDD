@@ -14,16 +14,15 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long bookingId; // 예매번호(PK)
-
     @ManyToOne
     @JoinColumn(name = "exhibit_no") // 전시번호(FK)
     private Exhibitions exhibitions;
-
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "member_id") // 회원번호(FK)
     private Member member;
-
-
+    @ManyToOne
+    @JoinColumn(name="payment_id")
+    private Payment payment;
     @Column(name = "booking_date")
     private LocalDateTime bookingDate; // 예매일
     @Column(name = "visit_date")
@@ -35,6 +34,10 @@ public class Booking {
 
     public Exhibitions getExhibitions() {
         return exhibitions;
+    }
+
+    public Payment getPayment() {
+        return payment;
     }
 
 
