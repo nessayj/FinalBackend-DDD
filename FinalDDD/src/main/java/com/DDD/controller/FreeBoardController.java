@@ -74,10 +74,17 @@ public class FreeBoardController {
     }
 
     // 게시글 수정(최종) + 작성자 정보 예외처리 추가
-    @PutMapping("/{boardNo}")
+//    @PutMapping("/{boardNo}")
+    @PutMapping("/boardView/{boardNo}")
     public ResponseEntity<Boolean> editBoards(@PathVariable Long boardNo, @RequestBody FreeBoardDto freeBoardDto, Principal principal) {
 
         // 사용자 정보 가져오기
+//        String id = principal.getName(); // id(member Pk)의 이름을 문자열로 반환
+
+        // 사용자 정보 가져오기(수정사항)
+        if(principal == null){
+            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+        }
         String id = principal.getName(); // id(member Pk)의 이름을 문자열로 반환
 
         try {
@@ -96,11 +103,18 @@ public class FreeBoardController {
     }
 
     // 게시글 삭제
-    @DeleteMapping("/{boardNo}")
+    @DeleteMapping("/boardView/{boardNo}")
     public ResponseEntity<Boolean> delBoards(@PathVariable Long boardNo, Principal principal) {
 
-        // 사용자 정보 가져오기
-        String id = principal.getName();
+//        // 사용자 정보 가져오기
+//        String id = principal.getName();
+
+        // 사용자 정보 가져오기(수정사항)
+        if(principal == null){
+            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+        }
+        String id = principal.getName(); // id(member Pk)의 이름을 문자열로 반환
+
 
         try {
             boolean result = freeBoardService.deleteBoards(boardNo, Long.parseLong(id));
@@ -119,7 +133,6 @@ public class FreeBoardController {
 
 
 
-
     // 카테고리별 자유게시판 목록 조회
     @GetMapping("/{category}")
     public ResponseEntity<List<FreeBoardDto>> getFreeBoardsByCategory(@PathVariable("category") String category) {
@@ -131,4 +144,16 @@ public class FreeBoardController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
+
+    // 자유게시판 검색 키워드에 해당하는 리스트 불러오기
+    @GetMapping("/searchList")
+    public ResponseEntity<List<FreeBoardDto>> searchListLoad(@RequestParam String keyword) {
+        List<FreeBoardDto> freeBoardList = freeBoardService.searchDataLoad("%%" + keyword + "%%");
+        if (!freeBoardList.isEmpty()) {
+            return new ResponseEntity<>(freeBoardList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
+

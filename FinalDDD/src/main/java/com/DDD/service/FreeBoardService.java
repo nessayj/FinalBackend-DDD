@@ -165,8 +165,6 @@ public class FreeBoardService {
     }
 
 
-
-
     // 카테고리별 게시판 조회
     public List<FreeBoardDto> getFreeBoardsByCategory(String category) { // 카테고리별로 가져오기 위해
         List<FreeBoardDto> freeBoards = new ArrayList<>();
@@ -187,6 +185,36 @@ public class FreeBoardService {
 
             freeBoardDto.setViews(freeBoard.getViews()); // 조회수 현재값으로 재수정
             System.out.println("조회수: " + freeBoard.getViews());
+
+
+            Member author = freeBoard.getMember(); // nickName 을 fk로 갖고 오기 위해
+            if (author != null) {
+                MemberDto memberDto = MemberDto.fromMember(author);
+                freeBoardDto.setAuthor(memberDto.getNickname());
+            }
+            freeBoards.add(freeBoardDto);
+        }
+        return freeBoards;
+
+    }
+
+    // 게시글 검색
+    public List<FreeBoardDto> searchDataLoad(String keyword) { // 카테고리별로 가져오기 위해
+        List<FreeBoardDto> freeBoards = new ArrayList<>();
+        List<FreeBoard> freeBoardList = freeBoardRepository.findWithKeyword(keyword);
+        for (FreeBoard freeBoard : freeBoardList) {
+            FreeBoardDto freeBoardDto = new FreeBoardDto();
+            freeBoardDto.setBoardNo(freeBoard.getBoardNo());
+            freeBoardDto.setCategory(freeBoard.getCategory());
+            freeBoardDto.setRegion(freeBoard.getRegion()); // 지역카테고리 추가
+            freeBoardDto.setTitle(freeBoard.getTitle());
+            freeBoardDto.setImage(freeBoard.getImage()); // 추가사항(이미지)
+            freeBoardDto.setWriteDate(freeBoard.getWriteDate());
+
+
+            freeBoardDto.setViews(freeBoard.getViews()); // 조회수 현재값으로 재수정
+            System.out.println("조회수: " + freeBoard.getViews());
+
 
 
             Member author = freeBoard.getMember(); // nickName 을 fk로 갖고 오기 위해

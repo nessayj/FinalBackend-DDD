@@ -5,13 +5,20 @@ package com.DDD.repository;
 
 import com.DDD.entity.FreeBoard;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-// 자유게시판 카테고리별 목록 조회
+
 @Repository
 public interface FreeBoardRepository extends JpaRepository<FreeBoard, Long> {
+    // 자유게시판 카테고리별 목록 조회
     List<FreeBoard> findByCategory(String category);
+
+    // 자유게시판 제목 or 내용 게시글 검색 조회
+    @Query("SELECT fb FROM FreeBoard fb WHERE fb.title LIKE %:keyword% OR fb.contents LIKE %:keyword% ORDER BY fb.boardNo DESC")
+    List<FreeBoard> findWithKeyword(@Param("keyword") String keyword);
 }
 
