@@ -43,8 +43,8 @@ public class FreeBoard {
     private String image;
 
     @ColumnDefault("0") // 조회수 (기본값 0 설정)
-//    @Column(nullable = false)
     private Integer views;
+
 
     @CreatedDate
     @Column(name = "write_date", nullable = false)

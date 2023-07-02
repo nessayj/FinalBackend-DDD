@@ -42,53 +42,17 @@ public class FreeBoardController {
         }
     }
 
-
-
-
-//    // 게시글 작성(2차 작업-작성자넣은상태)
-//    @PostMapping("/write")
-//    public ResponseEntity<Boolean> boardWrite(@RequestBody Map<String, String> data){
-//        String author = data.get("author");
-//        String category = data.get("category");
-//        String region = data.get("region");
-//        String title =  data.get("title");
-//        String image =  data.get("image");
-//        String contents = data.get("contents");
-//
-//        boolean result = freeBoardService.createBoards(author, category, region, title, image, contents);
-//
-//        if (result) {
-//            return new ResponseEntity<>(true, HttpStatus.OK);
-//        } else {
-//            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-//        }
-//    }
-
-
-
-
     // 게시글 상세 조회
     @GetMapping("/boardView/{boardNo}")
     public ResponseEntity<FreeBoard> getBoard(@PathVariable("boardNo") Long boardNo) {
         return new ResponseEntity(freeBoardService.selectBoardOne(boardNo), HttpStatus.OK);
     }
 
-    // 게시글 수정(최종) + 작성자 정보 예외처리 추가
-//    @PutMapping("/{boardNo}")
+    // 게시글 수정(최종)
     @PutMapping("/boardView/{boardNo}")
-    public ResponseEntity<Boolean> editBoards(@PathVariable Long boardNo, @RequestBody FreeBoardDto freeBoardDto, Principal principal) {
-
-        // 사용자 정보 가져오기
-//        String id = principal.getName(); // id(member Pk)의 이름을 문자열로 반환
-
-        // 사용자 정보 가져오기(수정사항)
-        if(principal == null){
-            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
-        }
-        String id = principal.getName(); // id(member Pk)의 이름을 문자열로 반환
-
+    public ResponseEntity<Boolean> editBoards(@PathVariable Long boardNo, @RequestBody FreeBoardDto freeBoardDto) {
         try {
-            boolean result = freeBoardService.updateBoards(boardNo, freeBoardDto, Long.parseLong(id));
+            boolean result = freeBoardService.updateBoards(boardNo, freeBoardDto);
 
             if (result) {
                 return new ResponseEntity<>(true, HttpStatus.OK);
@@ -97,41 +61,20 @@ public class FreeBoardController {
             }
         } catch (EntityNotFoundException e) { // 게시물 존재 여부에 따른 예외처리
             return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
-        } catch (IllegalArgumentException e) { // 작성자 일치 여부에 따른 예외처리
-            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
         }
     }
 
-    // 게시글 삭제
+    // 게시글 삭제(최종)
     @DeleteMapping("/boardView/{boardNo}")
-    public ResponseEntity<Boolean> delBoards(@PathVariable Long boardNo, Principal principal) {
+    public ResponseEntity<Boolean> delBoards(@PathVariable Long boardNo) {
+        boolean result = freeBoardService.deleteBoards(boardNo);
 
-//        // 사용자 정보 가져오기
-//        String id = principal.getName();
-
-        // 사용자 정보 가져오기(수정사항)
-        if(principal == null){
-            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
-        }
-        String id = principal.getName(); // id(member Pk)의 이름을 문자열로 반환
-
-
-        try {
-            boolean result = freeBoardService.deleteBoards(boardNo, Long.parseLong(id));
-
-            if (result) {
-                return new ResponseEntity<>(true, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
-            }
-        } catch (EntityNotFoundException e) {  // 게시물 존재여부에 따른 예외처리문
-            return new ResponseEntity<>(false, HttpStatus.NOT_FOUND);
-        } catch (IllegalArgumentException e) { // 작성자 일치여부에 따른 예외처리문
-            return new ResponseEntity<>(false, HttpStatus.UNAUTHORIZED);
+        if (result) {
+            return new ResponseEntity<>(true, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
     }
-
-
 
     // 카테고리별 자유게시판 목록 조회
     @GetMapping("/{category}")
