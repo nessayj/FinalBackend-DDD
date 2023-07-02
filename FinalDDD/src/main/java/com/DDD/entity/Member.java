@@ -1,6 +1,7 @@
 package com.DDD.entity;
 
 import com.DDD.constant.Authority;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import java.util.List;
 @Table(name = "member")
 @Getter @Setter @ToString
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Member {
     @Id
     @Column(name="member_id")
@@ -44,7 +46,7 @@ public class Member {
     @Column(nullable = false)
     private boolean isActive = true;
 
-    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne
     private Diary diary;
 
 //    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

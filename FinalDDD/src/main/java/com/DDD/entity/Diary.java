@@ -1,9 +1,11 @@
 package com.DDD.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "diary")
@@ -11,17 +13,18 @@ import javax.persistence.*;
 @Setter
 @ToString
 @NoArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Diary {
     @Id
     @Column(name = "diary_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private Long diaryId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String regDate;
+    private LocalDateTime regDate;
 
     private double rateStar;
 
@@ -29,14 +32,24 @@ public class Diary {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exhibit_no")
-    private Exhibitions exhibition;
+    private Exhibitions exhibitions;
+
+    @PrePersist
+    protected void onCreate() {
+        regDate = LocalDateTime.now();
+    }
+
+    public void update(double rateStar, String comment) {
+        this.rateStar = rateStar;
+        this.comment = comment;
+    }
 
     @Builder
-    public Diary(Member member, String regDate, double rateStar, String comment, Exhibitions exhibition) {
+    public Diary(Member member, LocalDateTime regDate, double rateStar, String comment, Exhibitions exhibitions) {
         this.member = member;
         this.regDate = regDate;
         this.rateStar = rateStar;
         this.comment = comment;
-        this.exhibition = exhibition;
+        this.exhibitions = exhibitions;
     }
 }

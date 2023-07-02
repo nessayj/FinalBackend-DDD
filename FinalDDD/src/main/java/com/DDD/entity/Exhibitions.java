@@ -1,6 +1,7 @@
 package com.DDD.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.json.JSONObject;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import javax.persistence.*;
 @Table(name="exhibitions")
 @Getter @Setter @ToString
 @RequiredArgsConstructor
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Exhibitions {
     @Id
     @Column(name="exhibit_no", nullable = false)
