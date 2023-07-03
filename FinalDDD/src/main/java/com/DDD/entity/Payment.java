@@ -21,10 +21,10 @@ public class Payment {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-    private String paymentType; //결제수당 (무통장입금/카카오페이)
+    private String paymentType; //결제수단 (무통장입금/카카오페이)
     private int paidPrice; // 결제금액
     @Enumerated(EnumType.STRING)
-    private PaymentStatus paymentStatus; // rufwo
+    private PaymentStatus paymentStatus; // 결제상태
     private LocalDateTime paymentDate; // 결제일시
     private LocalDateTime refundDate; // 환불일시
     private int paymentCnt; // 구매 수량

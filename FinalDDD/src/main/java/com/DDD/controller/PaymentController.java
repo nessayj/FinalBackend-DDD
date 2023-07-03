@@ -24,14 +24,15 @@ public class PaymentController {
 
     // 결제요청
     @PostMapping("/ready") // 처음에 겟매핑에서 포스트로 바꿈
-    public PayReadyDTO readyToKakaoPay() {
-        return paymentService.kakaoPayReady();
+    public PayReadyDTO readyToKakaoPay(String id,  String exhibitNo, String quantity, String price) {
+
+        return paymentService.kakaoPayReady(id, exhibitNo, quantity, price);
     }
 
     // 결제성공
     @GetMapping("/success")
-    public ResponseEntity afterPayRequest(@RequestParam("pg_token") String pg_token) {
-        PayConfirmDTO payConfirmDTO = paymentService.ApproveResponse(pg_token);
+    public ResponseEntity afterPayRequest(@RequestParam("pg_token") String pg_token, String id) {
+        PayConfirmDTO payConfirmDTO = paymentService.ApproveResponse(pg_token, id);
         return new ResponseEntity<>(payConfirmDTO, HttpStatus.OK);
     }
 
