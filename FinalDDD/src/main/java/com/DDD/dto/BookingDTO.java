@@ -17,7 +17,6 @@ public class BookingDTO {
     private String bookedTel; // 예매자연락처
     private Long exhibitNo; // 전시아이디
     private String exhibitName; // 전시회이름
-    private LocalDateTime paymentDate; //결제일
-    private String paymentMethod; // 결제수단
+    private PaymentDTO paymentDTO;
 
 }

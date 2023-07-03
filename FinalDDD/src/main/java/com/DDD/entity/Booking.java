@@ -17,10 +17,10 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "exhibit_no") // 전시번호(FK)
     private Exhibitions exhibitions;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "member_id") // 회원번호(FK)
     private Member member;
-    @ManyToOne
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     @JoinColumn(name="payment_id")
     private Payment payment;
     @Column(name = "booking_date")

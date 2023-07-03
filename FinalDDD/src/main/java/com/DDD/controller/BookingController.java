@@ -24,8 +24,7 @@ public class BookingController {
         String id = data.get("id");
         String bookingDate = data.get("bookingDate");
         String visitDate = data.get("visitDate");
-        String paymentId = data.get("paymentId");
-        boolean result = bookingService.bookTicket(exhibitNo, id, bookingDate, visitDate, paymentId);
+        boolean result = bookingService.bookTicket(exhibitNo, id, bookingDate, visitDate);
         if(result) {
             return new ResponseEntity(true, HttpStatus.OK);
         } else {
@@ -35,7 +34,7 @@ public class BookingController {
     }
 
     @GetMapping("/checkTicket")
-    public ResponseEntity<List<BookingDTO>> getBookedTicketList(String id) {
+    public ResponseEntity<List<BookingDTO>> getBookedTicketList(@RequestParam("id") String id) {
         List<BookingDTO> list = bookingService.FindTicket(id);
         return  new ResponseEntity<>(list,HttpStatus.OK);
     }

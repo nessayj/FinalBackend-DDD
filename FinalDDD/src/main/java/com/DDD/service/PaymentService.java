@@ -64,8 +64,8 @@ public class PaymentService {
         // 상품비과세 금액(필수)
         params.add("tax_free_amount", "0");
         // 성공 시 redirect url => 결제완료페이지와 연결해야함
-        String approvalUrl = "http://localhost:8111/pay/success?id=" + id;
-        params.add("approval_url", approvalUrl);
+//        String approvalUrl = "http://localhost:8111/pay/success?id=" + id;
+        params.add("approval_url", "http://localhost:3000/");
         // 취소 시  url
         params.add("cancel_url", "http://localhost:8111/pay/cancel");
         // 실패 시  url
@@ -137,23 +137,3 @@ public class PaymentService {
         return approveResponse;
     }
 }
-
-
-
-
-    //PayAmountDTO payAmountDTO = payConfirmDTO.getAmount();
-//
-//            if(member != null) {
-//                // 멤버가 존재해야 결제가능
-//                Payment payment = new Payment();
-//                payment.setMember(member);
-//                payment.setPaymentType(params.getFirst("payment_method_type"));
-//                payment.setPaidPrice(payAmountDTO.getTotal());
-//                payment.setPaymentCnt(Integer.parseInt(params.getFirst("quantity")));
-//                payment.setPaymentDate(LocalDateTime.parse(params.getFirst("approved_at"), formatter));
-//
-//
-//                paymentRepository.save(payment);
-//            } else {
-//                System.out.println("찾을 수 없는 회원입니다!");
-//            }
