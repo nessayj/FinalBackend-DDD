@@ -1,7 +1,6 @@
 package com.DDD.controller;
 
-import com.DDD.constant.PaymentStatus;
-import com.DDD.dto.PayConfirmDTO;
+import com.DDD.dto.KakaoApproveResponse;
 import com.DDD.dto.PayReadyDTO;
 import com.DDD.service.PaymentService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -31,10 +29,11 @@ public class PaymentController {
 
     // 결제성공
     @GetMapping("/success")
-    public ResponseEntity afterPayRequest(@RequestParam("pg_token") String pg_token, String id) {
-        PayConfirmDTO payConfirmDTO = paymentService.ApproveResponse(pg_token, id);
-        return new ResponseEntity<>(payConfirmDTO, HttpStatus.OK);
+    public ResponseEntity afterPayRequest(@RequestParam("pg_token") String pg_Token, @RequestParam("id") String id  ) {
+        KakaoApproveResponse kakaoApprove = paymentService.ApproveResponse(pg_Token, id);
+        return new ResponseEntity<>(kakaoApprove, HttpStatus.OK);
     }
+
 
     // 결제 진행 중 취소
     @GetMapping("/cancel")
