@@ -1,7 +1,9 @@
 package com.DDD.service;
 
+import com.DDD.dto.BoardCommentDto;
 import com.DDD.dto.FreeBoardDto;
 import com.DDD.dto.MemberDto;
+import com.DDD.entity.BoardComment;
 import com.DDD.entity.FreeBoard;
 import com.DDD.entity.Member;
 import com.DDD.repository.FreeBoardRepository;
@@ -74,6 +76,25 @@ public class FreeBoardService {
         FreeBoardDto freeboardDto = new FreeBoardDto();
         freeboardDto.setBoardNo(freeBoard.getBoardNo());
         freeboardDto.setAuthor(freeBoard.getMember().getNickname());
+
+        log.info("Comments: {}", freeBoard.getComments());
+        List<BoardComment> comments = freeBoard.getComments();
+        List<BoardCommentDto> boardCommentDtos = new ArrayList<>();
+
+        for (BoardComment comment : comments) {
+            BoardCommentDto boardCommentDto = new BoardCommentDto();
+            boardCommentDto.setCommentNo(comment.getCommentNo());
+            boardCommentDto.setContent(comment.getContent());
+            // 필요한 다른 필드들도 추가 가능
+            // ...
+            boardCommentDtos.add(boardCommentDto);
+        }
+
+        freeboardDto.setComments(boardCommentDtos);
+
+
+
+
 //        freeboardDto.setEmail(freeBoard.getMember().getEmail()); // 회원 정보 할당
         freeboardDto.setId(freeBoard.getMember().getId()); // 회원 정보 할당
         freeboardDto.setCategory(freeBoard.getCategory());

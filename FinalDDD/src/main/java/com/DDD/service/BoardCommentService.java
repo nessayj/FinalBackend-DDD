@@ -28,10 +28,10 @@ public class BoardCommentService {
 
 
     // 댓글 작성
-    public boolean createComments(BoardCommentDto boardCommentDto) {
-        log.debug("Creating comments: {}", boardCommentDto);
-        Optional<Member> optionalMember = memberRepository.findById(boardCommentDto.getId());
-        Optional<FreeBoard> optionalFreeBoard = freeBoardRepository.findById(boardCommentDto.getBoardNo());
+    public boolean createComments(String comment, Long id, Long boardNo) {
+        log.debug("Creating comments: {}", comment, id, boardNo );
+        Optional<Member> optionalMember = memberRepository.findById(id);
+        Optional<FreeBoard> optionalFreeBoard = freeBoardRepository.findById(boardNo);
 
         if (optionalFreeBoard.isEmpty() || optionalMember.isEmpty()) {
             throw new EntityNotFoundException("게시글 또는 회원을 찾을 수 없습니다.");
@@ -43,12 +43,10 @@ public class BoardCommentService {
         BoardComment boardComment = new BoardComment();
         boardComment.setFreeBoard(freeBoard);
         boardComment.setMember(member);
-        boardComment.setContent(boardCommentDto.getContent());
+        boardComment.setContent(comment);
         boardComment.setWriteDate(LocalDateTime.now());
-
 
         boardCommentRepository.save(boardComment);
         return true;
     }
-
 }

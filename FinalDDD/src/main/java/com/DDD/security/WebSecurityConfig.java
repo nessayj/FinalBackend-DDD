@@ -41,7 +41,7 @@ public class WebSecurityConfig {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/members/**", "/exhibitions/**", "/booking/**", "/pay/**").permitAll()
-                .antMatchers("/boardList/**").permitAll()
+                .antMatchers("/boardList/**", "/comments/**").permitAll()
                 .antMatchers("/login/**").permitAll()
                 .anyRequest().authenticated()
 

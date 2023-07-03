@@ -24,4 +24,6 @@ public class FreeBoardDto {  // 프론트엔드와 주고 받을 때 사용
     private String profileImg; // 프로필 이미지 추가
     private List<Map<String, Object>> boardList; // 검색어용 게시판 리스트 추가
     private boolean isOk; // 검색 결과 여부
+
+    private List<BoardCommentDto> comments; // 댓글 리스트 추가
 }

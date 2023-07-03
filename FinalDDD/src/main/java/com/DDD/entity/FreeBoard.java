@@ -1,5 +1,6 @@
 package com.DDD.entity;
 
+import com.DDD.dto.BoardCommentDto;
 import com.DDD.dto.FreeBoardDto;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -7,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity // JPA 에 Entity 클래스 임을 알려줌.
@@ -52,8 +54,21 @@ public class FreeBoard {
 
 
 //    // 댓글 테이블 조인
-//    @OneToMany(mappedBy = "freeBoard", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // 하나의 게시물에 다수의 댓글 존재하므로
+    @OneToMany(mappedBy = "freeBoard", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // 하나의 게시물에 다수의 댓글 존재하므로
 //    private List<BoardComment> comments;
+    private List<BoardComment> comments = new ArrayList<>(); // 댓글 목록
+
+    // BoardComment 게터 생성
+    public List<BoardComment> getComments() {
+        return comments;
+    }
+
+    // BoardComment 세터 생성
+    public void setComments(List<BoardComment> comments) {
+        this.comments = comments;
+    }
+
+
 
     @Builder
     public FreeBoard(FreeBoardDto dto, Member member) {
