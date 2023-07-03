@@ -4,6 +4,7 @@ import jdk.jfr.Timestamp;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,8 +23,8 @@ public class BoardComment {
     @Column(nullable = false, length = 1500)
     private String content; // 댓글 내용
 
-    @Timestamp
-    @Column(name = "comment_write", nullable = false)
+    @CreatedDate
+    @Column(name = "comment_write")
     private LocalDateTime writeDate; // 댓글 작성일
 
     // 게시판 테이블의 게시판 번호를 외래 키(FK)로 가져옴(한 개의 게시물의 여러 댓글)

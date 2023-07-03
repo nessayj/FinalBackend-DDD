@@ -10,10 +10,14 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
 public interface FreeBoardRepository extends JpaRepository<FreeBoard, Long> {
+    // 게시판번호(PK) 찾기
+    Optional<FreeBoard> findById(long boardNo);
+
     // 자유게시판 카테고리별 목록 조회
     List<FreeBoard> findByCategory(String category);
 
