@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class TokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30; // 30분(인증권한에 대한 발급받은 토큰의 허용 시간을 짧게 잡아야함) 토큰을 재생산해야되는
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 300; // 30분(인증권한에 대한 발급받은 토큰의 허용 시간을 짧게 잡아야함) 토큰을 재생산해야되는
     private final Key key;
 
     // 주의점: 여기서 @Value 는 `springframework.beans.factory.annotation.Value`소속이다! lombok의 @Value와 착각하지 말것!
