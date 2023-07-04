@@ -24,7 +24,8 @@ public class BookingController {
         String id = data.get("id");
         String bookingDate = data.get("bookingDate");
         String visitDate = data.get("visitDate");
-        boolean result = bookingService.bookTicket(exhibitNo, id, bookingDate, visitDate);
+        String paymentId = data.get("paymentId");
+        boolean result = bookingService.bookTicket(exhibitNo, id, bookingDate, visitDate, Long.valueOf(paymentId));
         if(result) {
             return new ResponseEntity(true, HttpStatus.OK);
         } else {

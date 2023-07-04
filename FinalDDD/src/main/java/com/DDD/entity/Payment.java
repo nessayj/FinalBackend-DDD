@@ -30,8 +30,7 @@ public class Payment {
     private int paymentCnt; // 구매 수량
     @OneToOne
     @JoinColumn(name = "booking_id")
-    private Booking booking;
-
+    private  Booking booking;
 
 
 

@@ -1,8 +1,10 @@
 package com.DDD.service;
 
 import com.DDD.constant.PaymentStatus;
-import com.DDD.dto.KakaoApproveResponse;
+import com.DDD.dto.KakaoApproveResponseDTO;
 import com.DDD.dto.PayReadyDTO;
+import com.DDD.dto.PaymentDTO;
+import com.DDD.entity.Booking;
 import com.DDD.entity.Exhibitions;
 import com.DDD.entity.Member;
 import com.DDD.entity.Payment;
@@ -37,6 +39,19 @@ public class PaymentService {
     // 카카오 어드민키
     @Value("${api.kakaoAdminKey}")
     private String adminKey;
+
+    // 카카오가 요구하는 헤더값
+    private HttpHeaders getHeaders() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        // 카카오인증키
+        String auth = "KakaoAK " + adminKey;
+
+        httpHeaders.set("Authorization", auth);
+        // 카카오에게 넘겨줄 타입
+        httpHeaders.set("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
+
+        return httpHeaders;
+    }
 
     // 날짜시간
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -84,21 +99,9 @@ public class PaymentService {
         return payReadyDTO;
     }
 
-    // 카카오가 요구하는 헤더값
-    private HttpHeaders getHeaders() {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        // 카카오인증키
-        String auth = "KakaoAK " + adminKey;
-
-        httpHeaders.set("Authorization", auth);
-        // 카카오에게 넘겨줄 타입
-        httpHeaders.set("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
-
-        return httpHeaders;
-    }
 
     // 결제 승인 단계
-    public KakaoApproveResponse ApproveResponse(String pg_Token, String id) {
+    public KakaoApproveResponseDTO ApproveResponse(String pg_Token, String id) {
 
         // 카카오 요청
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
@@ -114,10 +117,10 @@ public class PaymentService {
         // 외부에 보낼 url
         RestTemplate restTemplate = new RestTemplate();
 
-        KakaoApproveResponse approveResponse = restTemplate.postForObject(
+        KakaoApproveResponseDTO approveResponse = restTemplate.postForObject(
                 "https://kapi.kakao.com/v1/payment/approve",
                 requestEntity,
-                KakaoApproveResponse.class);
+                KakaoApproveResponseDTO.class);
 
         // 결제정보엔티티에 저장
         if (approveResponse != null && approveResponse.getAid() !=null) {
@@ -135,5 +138,30 @@ public class PaymentService {
         }
 
         return approveResponse;
+    }
+
+    // 무통장입금
+    public PaymentDTO BankingPayment(String id, int paidPrice, int paymentCnt) {
+        Payment payment = new Payment();
+        Member member = memberRepository.findById(Long.parseLong(id)).orElse(null);
+        payment.setMember(member);
+        payment.setPaymentType("무통장입금");
+        payment.setPaidPrice(paidPrice);
+        payment.setPaymentStatus(PaymentStatus.결제완료);
+        payment.setPaymentDate(LocalDateTime.now());
+        payment.setPaymentCnt(paymentCnt);
+
+        Payment savedpayment = paymentRepository.save(payment);
+
+        PaymentDTO paymentDTO = new PaymentDTO();
+        paymentDTO.setPaymentId(savedpayment.getPaymentId());
+        paymentDTO.setMemberId(String.valueOf(savedpayment.getMember().getId()));
+        paymentDTO.setPaymentType(savedpayment.getPaymentType());
+        paymentDTO.setPaidPrice(String.valueOf(savedpayment.getPaidPrice()));
+        paymentDTO.setPaymentStatus(savedpayment.getPaymentStatus().toString());
+        paymentDTO.setPaymentDate(savedpayment.getPaymentDate());
+        payment.setPaymentCnt(savedpayment.getPaymentCnt());
+
+        return paymentDTO;
     }
 }

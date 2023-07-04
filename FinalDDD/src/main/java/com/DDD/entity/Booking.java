@@ -22,7 +22,7 @@ public class Booking {
     private Member member;
     @OneToOne
     @JoinColumn(name = "payment_id")
-    private Payment payment;
+    private Payment payment;  // 걸제정보 onetoone
     @Column(name = "booking_date")
     private LocalDateTime bookingDate; // 예매일
     @Column(name = "visit_date")

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingDTO {
-    private Long bookingNo; // 예매번호(PK)
+    private Long bookingId; // 예매번호(PK)
     private LocalDateTime bookingDate; // 예매일
     private LocalDateTime visitDate; // 방문일
     private Long id; // 회원아이디번호

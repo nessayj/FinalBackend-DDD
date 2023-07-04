@@ -11,6 +11,7 @@ import com.DDD.dto.PaymentDTO;
 import com.DDD.entity.Booking;
 import com.DDD.entity.Exhibitions;
 import com.DDD.entity.Member;
+import com.DDD.entity.Payment;
 import com.DDD.repository.BookingRepository;
 import com.DDD.repository.ExhibitionsRepository;
 import com.DDD.repository.MemberRepository;
@@ -26,7 +27,6 @@ import javax.transaction.Transactional;
 @Transactional
 @RequiredArgsConstructor
 public class BookingService {
-    private Booking booking;
     private final BookingRepository bookingRepository;
     private final MemberRepository memberRepository;
     private final ExhibitionsRepository exhibitionsRepository;
@@ -36,7 +36,7 @@ public class BookingService {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     //  예매하기
-    public boolean bookTicket(String exhibitNo, String id, String bookingDate, String visitDate ) {
+    public boolean bookTicket(String exhibitNo, String id, String bookingDate, String visitDate, Long paymentId ) {
         Booking booking = new Booking();
 
         booking.setBookingDate(LocalDateTime.parse(bookingDate, formatter));
@@ -50,6 +50,15 @@ public class BookingService {
         // 전시엔티티 불러와서 넣기
         Exhibitions exhibition = exhibitionsRepository.findByExhibitNo(Long.parseLong(exhibitNo));
         booking.setExhibitions(exhibition);
+
+        // 결제 아이디 설정
+        Optional<Payment> payment = paymentRepository.findById(paymentId);
+        if(payment.isPresent()) {
+            booking.setPayment(payment.get());
+        } else {
+            log.error("아이디찾기실패!! : " + paymentId);
+            return false;
+        }
 
         try {
             bookingRepository.save(booking);
@@ -66,7 +75,7 @@ public class BookingService {
 
         for(Booking e : bookings) {
             BookingDTO bookingDTO = new BookingDTO();
-            bookingDTO.setBookingNo(e.getBookingId());
+            bookingDTO.setBookingId(e.getBookingId());
             bookingDTO.setId(e.getMember().getId());
             bookingDTO.setBookedName(e.getMember().getName());
             bookingDTO.setBookedEmail(e.getMember().getEmail());
@@ -76,13 +85,14 @@ public class BookingService {
             bookingDTO.setVisitDate(e.getVisitDate());
 
             // 결제정보추출
-            if(e.getPayment() == null) {
+            if(e.getPayment() != null) {
                 PaymentDTO paymentDTO = new PaymentDTO();
-                paymentDTO.setPaymentId(Long.valueOf("3"));
+                paymentDTO.setPaymentId(e.getPayment().getPaymentId());
                 paymentDTO.setPaymentType(e.getPayment().getPaymentType());
                 paymentDTO.setPaidPrice(String.valueOf(e.getPayment().getPaidPrice()));
                 paymentDTO.setPaymentStatus(String.valueOf(e.getPayment().getPaymentStatus()));
                 paymentDTO.setPaymentDate(e.getPayment().getPaymentDate());
+                paymentDTO.setPaymentCnt(e.getPayment().getPaymentCnt());
 
                 bookingDTO.setPaymentDTO(paymentDTO);
             }

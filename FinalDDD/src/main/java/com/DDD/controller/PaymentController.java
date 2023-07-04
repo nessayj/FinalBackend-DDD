@@ -1,7 +1,10 @@
 package com.DDD.controller;
 
-import com.DDD.dto.KakaoApproveResponse;
+import com.DDD.dto.KakaoApproveResponseDTO;
 import com.DDD.dto.PayReadyDTO;
+import com.DDD.dto.PaymentDTO;
+import com.DDD.entity.Booking;
+import com.DDD.service.BookingService;
 import com.DDD.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +22,7 @@ public class PaymentController {
     // 카카오페이 결제 요청
     @Autowired
     private PaymentService paymentService;
+    private BookingService bookingService;
 
     // 결제요청
     @PostMapping("/ready") // 처음에 겟매핑에서 포스트로 바꿈
@@ -30,7 +34,7 @@ public class PaymentController {
     // 결제성공
     @GetMapping("/success")
     public ResponseEntity afterPayRequest(@RequestParam("pg_token") String pg_Token, @RequestParam("id") String id  ) {
-        KakaoApproveResponse kakaoApprove = paymentService.ApproveResponse(pg_Token, id);
+        KakaoApproveResponseDTO kakaoApprove = paymentService.ApproveResponse(pg_Token, id);
         return new ResponseEntity<>(kakaoApprove, HttpStatus.OK);
     }
 
@@ -46,6 +50,15 @@ public class PaymentController {
     @GetMapping("/fail")
     public String payFail() {
         return "redirect:/previous-page";
+    }
+
+    // 무통장입금
+    @PostMapping("/banking")
+    public ResponseEntity<PaymentDTO> bankingPayment(@RequestParam("id") String id,
+                                                     @RequestParam("paidPrice") int paidPrice,
+                                                     @RequestParam("paymentCnt") int paymentCnt) {
+        PaymentDTO paymentDTO = paymentService.BankingPayment(id, paidPrice, paymentCnt);
+        return ResponseEntity.ok(paymentDTO);
     }
 
 }
