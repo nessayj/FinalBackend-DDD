@@ -45,11 +45,22 @@ public class DiaryController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
-//    public ResponseEntity<Boolean> emailDup(@RequestBody Map<String, String> emailDupData) {
-//        String email = emailDupData.get("email");
-//        boolean isDuplicate = memberService.emailDupCk(email);
-//        return ResponseEntity.ok(isDuplicate);
-//    }
+
+    @PostMapping("/{exhibitNo}/star")
+    public ResponseEntity<Boolean> changeStar(@RequestBody Map<String, String> infoData) {
+        Long memberId = Long.valueOf(infoData.get("memberId"));
+        Long exhibitNo = Long.valueOf(infoData.get("exhibitionNo"));
+        double rateStar = Double.parseDouble(infoData.get("rateStar"));
+        return ResponseEntity.ok(diaryService.changeStar(memberId, exhibitNo, rateStar));
+    }
+
+    @PostMapping("/{exhibitNo}/comment")
+    public ResponseEntity<Boolean> changeComment(@RequestBody Map<String, String> infoData) {
+        Long memberId = Long.valueOf(infoData.get("memberId"));
+        Long exhibitNo = Long.valueOf(infoData.get("exhibitionNo"));
+        String comment = infoData.get("comment");
+        return ResponseEntity.ok(diaryService.changeComment(memberId, exhibitNo, comment));
+    }
 
 
 

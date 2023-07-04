@@ -43,6 +43,12 @@ public class Diary {
         this.rateStar = rateStar;
         this.comment = comment;
     }
+    public void updateStar(double rateStar) {
+        this.rateStar = rateStar;
+    }
+    public void updateComment(String comment) {
+        this.comment = comment;
+    }
 
     @Builder
     public Diary(Member member, LocalDateTime regDate, double rateStar, String comment, Exhibitions exhibitions) {
