@@ -20,8 +20,8 @@ public class Booking {
     @ManyToOne
     @JoinColumn(name = "member_id") // 회원번호(FK)
     private Member member;
-    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
-    @JoinColumn(name="payment_id")
+    @OneToOne
+    @JoinColumn(name = "payment_id")
     private Payment payment;
     @Column(name = "booking_date")
     private LocalDateTime bookingDate; // 예매일

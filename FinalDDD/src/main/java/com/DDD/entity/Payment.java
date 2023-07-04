@@ -28,6 +28,10 @@ public class Payment {
     private LocalDateTime paymentDate; // 결제일시
     private LocalDateTime refundDate; // 환불일시
     private int paymentCnt; // 구매 수량
+    @OneToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
+
 
 
 

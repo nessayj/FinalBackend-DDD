@@ -68,15 +68,17 @@ public class BookingService {
             BookingDTO bookingDTO = new BookingDTO();
             bookingDTO.setBookingNo(e.getBookingId());
             bookingDTO.setId(e.getMember().getId());
+            bookingDTO.setBookedName(e.getMember().getName());
+            bookingDTO.setBookedEmail(e.getMember().getEmail());
             bookingDTO.setExhibitNo(e.getExhibitions().getExhibitNo());
             bookingDTO.setExhibitName(e.getExhibitions().getExhibitName());
             bookingDTO.setBookingDate(e.getBookingDate());
             bookingDTO.setVisitDate(e.getVisitDate());
 
             // 결제정보추출
-            if(e.getPayment() != null) {
+            if(e.getPayment() == null) {
                 PaymentDTO paymentDTO = new PaymentDTO();
-                paymentDTO.setPaymentId(e.getPayment().getPaymentId());
+                paymentDTO.setPaymentId(Long.valueOf("3"));
                 paymentDTO.setPaymentType(e.getPayment().getPaymentType());
                 paymentDTO.setPaidPrice(String.valueOf(e.getPayment().getPaidPrice()));
                 paymentDTO.setPaymentStatus(String.valueOf(e.getPayment().getPaymentStatus()));
