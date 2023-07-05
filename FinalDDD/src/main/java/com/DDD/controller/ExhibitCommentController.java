@@ -1,6 +1,7 @@
 package com.DDD.controller;
 
 
+import com.DDD.dto.ExhibitCommentDTO;
 import com.DDD.service.ExhibitCommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +32,13 @@ public class ExhibitCommentController {
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("한줄평 저장 실패!🤬");
         }
+    }
+
+    // 한출평 목록
+    @GetMapping("/list")
+    public ResponseEntity<List<ExhibitCommentDTO>> getCommentList(@RequestParam("exhibitNo") String exhibitNo) {
+        List<ExhibitCommentDTO> list = exhibitCommentService.getComments(exhibitNo);
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
 }
