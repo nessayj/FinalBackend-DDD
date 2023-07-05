@@ -4,6 +4,7 @@ package com.DDD.repository;
 // JpaRepository<테이블명, PK에 대한 데이터형>
 
 import com.DDD.entity.FreeBoard;
+import com.DDD.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,5 +28,7 @@ public interface FreeBoardRepository extends JpaRepository<FreeBoard, Long> {
     // 자유게시판 제목 or 내용 게시글 검색 조회
     @Query("SELECT fb FROM FreeBoard fb WHERE fb.title LIKE %:keyword% OR fb.contents LIKE %:keyword% ORDER BY fb.boardNo DESC")
     List<FreeBoard> findWithKeyword(@Param("keyword") String keyword);
+
+
 }
 

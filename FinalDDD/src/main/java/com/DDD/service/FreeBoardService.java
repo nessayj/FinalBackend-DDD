@@ -59,31 +59,31 @@ public class FreeBoardService {
         return true;
     }
 
+
+
     // 게시글 상세조회
     public FreeBoardDto selectBoardOne(Long boardNo) {
         FreeBoard freeBoard = freeBoardRepository.findById(boardNo)
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시물을 찾을 수 없습니다."));
 
-        // 조회수 증가
+
+        // 조회수 초기화 (수정)
         if (freeBoard.getViews() == null) {
-            freeBoard.setViews(1);
-        } else {
-            freeBoard.setViews(freeBoard.getViews() + 1);
+            freeBoard.setViews(0);
         }
+
+        // 조회수 증가
+        freeBoard.setViews(freeBoard.getViews() + 1);
         freeBoardRepository.save(freeBoard);
         System.out.println("조회수 : " + freeBoard.getViews());
 
-//        // 조회수 오류 수정
-//        if (freeBoard != null && freeBoard.getViews() != null) {
-//            freeBoardDto.setViews(freeBoard.getViews()); // 조회수 현재값으로 재수정
-//            System.out.println("조회수: " + freeBoard.getViews());
-//        }
 
 
         FreeBoardDto freeboardDto = new FreeBoardDto();
         freeboardDto.setBoardNo(freeBoard.getBoardNo());
         freeboardDto.setAuthor(freeBoard.getMember().getNickname());
 
+        freeboardDto.setViews(freeBoard.getViews()); // 조회수 설정 ** 수정
 
         log.info("Comments: {}", freeBoard.getComments());
         List<BoardComment> comments = freeBoard.getComments();
@@ -122,6 +122,11 @@ public class FreeBoardService {
 
         return freeboardDto;
     }
+
+
+
+
+
 
     // 게시글 수정(최종) + 작성자 인증 제외(프엔 측 작성자 본인만 해당 페이지 접근 가능하도록 조건식 적용)
     public boolean updateBoards(Long boardNo, FreeBoardDto freeBoardDto) {
@@ -215,6 +220,5 @@ public class FreeBoardService {
             freeBoards.add(freeBoardDto);
         }
         return freeBoards;
-
     }
 }
