@@ -15,24 +15,34 @@ import java.util.Map;
 @Slf4j
 @RequestMapping(value = "/booking")
 @RequiredArgsConstructor
+@CrossOrigin("http://localhost:3000")
 public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping("/newTicket")
-    public ResponseEntity<Boolean> bookTicket(@RequestBody Map<String, String> data) {
-        String exhibitNo = data.get("exhibitNo");
-        String id = data.get("id");
-        String bookingDate = data.get("bookingDate");
-        String visitDate = data.get("visitDate");
-        String paymentId = data.get("paymentId");
-        boolean result = bookingService.bookTicket(exhibitNo, id, bookingDate, visitDate, Long.valueOf(paymentId));
-        if(result) {
-            return new ResponseEntity(true, HttpStatus.OK);
-        } else {
-            return new ResponseEntity(false, HttpStatus.BAD_GATEWAY);
-        }
+    public ResponseEntity<Long> bookTicket(@RequestBody Map<String, String> data) {
+        try {
+            String id = data.get("id");
+            String exhibitNo = data.get("exhibitNo");
+            String visitDate = data.get("visitDate");
+            String bookedName = data.get("bookedName");
+            String bookedEmail = data.get("bookedEmail");
+            String bookedTel = data.get("bookedTel");
+            String getTicket = data.get("getTicket");
 
+            Long bookingId = bookingService.bookTicket(exhibitNo, id, visitDate, bookedName, bookedEmail, bookedTel, getTicket);
+            if (bookingId != null) {
+                return ResponseEntity.ok(bookingId); // 성공 응답과 bookingId 반환
+            } else {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 실패 응답 반환
+            }
+            } catch (Exception e) {
+                e.printStackTrace(); // 예외 정보 출력 또는 로깅
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null); // 실패 응답 반환
+            }
     }
+
+
 
     @GetMapping("/checkTicket")
     public ResponseEntity<List<BookingDTO>> getBookedTicketList(@RequestParam("id") String id) {

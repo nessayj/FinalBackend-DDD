@@ -12,7 +12,8 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class PaymentDTO {
     private Long paymentId;
-    private String memberId; // 멤버아이디
+    private Long bookingId;
+    private String memberId; // 멤버아이
     private String paymentType; // 무통장/카카오페이
     private String paidPrice; // 지불한 총금액
     private String paymentStatus; // 결제상태

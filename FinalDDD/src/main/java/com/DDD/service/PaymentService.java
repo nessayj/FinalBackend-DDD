@@ -1,6 +1,7 @@
 package com.DDD.service;
 
 import com.DDD.constant.PaymentStatus;
+import com.DDD.dto.BookingDTO;
 import com.DDD.dto.KakaoApproveResponseDTO;
 import com.DDD.dto.PayReadyDTO;
 import com.DDD.dto.PaymentDTO;
@@ -8,6 +9,7 @@ import com.DDD.entity.Booking;
 import com.DDD.entity.Exhibitions;
 import com.DDD.entity.Member;
 import com.DDD.entity.Payment;
+import com.DDD.repository.BookingRepository;
 import com.DDD.repository.ExhibitionsRepository;
 import com.DDD.repository.MemberRepository;
 import com.DDD.repository.PaymentRepository;
@@ -22,6 +24,9 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import java.awt.print.Book;
+import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -36,6 +41,7 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final MemberRepository memberRepository;
     private final ExhibitionsRepository exhibitionsRepository;
+    private final BookingRepository bookingRepository;
     // 카카오 어드민키
     @Value("${api.kakaoAdminKey}")
     private String adminKey;
@@ -58,7 +64,7 @@ public class PaymentService {
 
 
     // 결제 준비
-    public PayReadyDTO kakaoPayReady(String id, String exhibitNo, String quantity, String totalPrice) {
+    public PayReadyDTO kakaoPayReady(String id, String exhibitNo, String quantity, String totalPrice, String bookingId) {
         // 전시회 정보조회
         Exhibitions exhibitions = exhibitionsRepository.findByExhibitNo(Long.parseLong(exhibitNo));
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -78,9 +84,9 @@ public class PaymentService {
         params.add("total_amount", totalPrice);
         // 상품비과세 금액(필수)
         params.add("tax_free_amount", "0");
-        // 성공 시 redirect url => 결제완료페이지와 연결해야함
-//        String approvalUrl = "http://localhost:8111/pay/success?id=" + id;
-        params.add("approval_url", "http://localhost:3000/");
+         // 성공 시 redirect url => 결제완료페이지와 연결해야함
+        String approvalUrl = "http://localhost:8111/pay/kakaoSuccess?id=" + id + "&bookingId=" + bookingId;
+        params.add("approval_url", approvalUrl);
         // 취소 시  url
         params.add("cancel_url", "http://localhost:8111/pay/cancel");
         // 실패 시  url
@@ -99,9 +105,8 @@ public class PaymentService {
         return payReadyDTO;
     }
 
-
     // 결제 승인 단계
-    public KakaoApproveResponseDTO ApproveResponse(String pg_Token, String id) {
+    public KakaoApproveResponseDTO ApproveResponse(String pg_Token, String id, String bookingId) {
 
         // 카카오 요청
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
@@ -123,9 +128,14 @@ public class PaymentService {
                 KakaoApproveResponseDTO.class);
 
         // 결제정보엔티티에 저장
+        Booking booking = bookingRepository.findById(Long.valueOf(bookingId)).orElse(null);
+        if (booking == null) {
+            throw new IllegalArgumentException("Invalid booking ID");
+        }
         if (approveResponse != null && approveResponse.getAid() !=null) {
             Payment payment = new Payment();
             payment.setPaymentType("카카오페이");
+            payment.setBooking(booking);
             payment.setPaidPrice(approveResponse.getAmount().getTotal());
             payment.setPaymentStatus(PaymentStatus.결제완료);
             payment.setPaymentDate(LocalDateTime.now());
@@ -140,27 +150,45 @@ public class PaymentService {
         return approveResponse;
     }
 
-    // 무통장입금
-    public PaymentDTO BankingPayment(String id, int paidPrice, int paymentCnt) {
+   // 무통장입금
+    public PaymentDTO BankingPayment(String id, String bookingId, int paidPrice, int paymentCnt) {
         Payment payment = new Payment();
         Member member = memberRepository.findById(Long.parseLong(id)).orElse(null);
+        Booking booking = bookingRepository.findById(Long.valueOf(bookingId)).orElse(null);
+        if (booking == null) {
+            throw new IllegalArgumentException("Invalid booking ID");
+        }
+
         payment.setMember(member);
         payment.setPaymentType("무통장입금");
         payment.setPaidPrice(paidPrice);
-        payment.setPaymentStatus(PaymentStatus.결제완료);
+        payment.setPaymentStatus(PaymentStatus.입금확인중);
         payment.setPaymentDate(LocalDateTime.now());
         payment.setPaymentCnt(paymentCnt);
+        payment.setBooking(booking);
 
-        Payment savedpayment = paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
 
         PaymentDTO paymentDTO = new PaymentDTO();
-        paymentDTO.setPaymentId(savedpayment.getPaymentId());
-        paymentDTO.setMemberId(String.valueOf(savedpayment.getMember().getId()));
-        paymentDTO.setPaymentType(savedpayment.getPaymentType());
-        paymentDTO.setPaidPrice(String.valueOf(savedpayment.getPaidPrice()));
-        paymentDTO.setPaymentStatus(savedpayment.getPaymentStatus().toString());
-        paymentDTO.setPaymentDate(savedpayment.getPaymentDate());
-        payment.setPaymentCnt(savedpayment.getPaymentCnt());
+        paymentDTO.setPaymentId(savedPayment.getPaymentId());
+        paymentDTO.setMemberId(String.valueOf(savedPayment.getMember().getId()));
+        paymentDTO.setBookingId(savedPayment.getBooking().getBookingId());
+        paymentDTO.setPaymentType(savedPayment.getPaymentType());
+        paymentDTO.setPaidPrice(String.valueOf(savedPayment.getPaidPrice()));
+        paymentDTO.setPaymentStatus(savedPayment.getPaymentStatus().toString());
+        paymentDTO.setPaymentDate(savedPayment.getPaymentDate());
+        paymentDTO.setPaymentCnt(savedPayment.getPaymentCnt());
+
+        // 일정 시간이 지난 후 결제 상태 변경 로직
+        // 예: 2일(48시간)이 지나면 결제완료로 변경
+        Duration duration = Duration.ofHours(48);
+        LocalDateTime expirationDate = savedPayment.getPaymentDate().plus(duration);
+        if (LocalDateTime.now().isAfter(expirationDate)) {
+            savedPayment.setPaymentStatus(PaymentStatus.결제완료);
+            paymentRepository.save(savedPayment);
+            paymentDTO.setPaymentStatus(savedPayment.getPaymentStatus().toString());
+        }
+
 
         return paymentDTO;
     }

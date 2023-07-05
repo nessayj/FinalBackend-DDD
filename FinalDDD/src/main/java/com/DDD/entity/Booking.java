@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,11 +23,15 @@ public class Booking {
     private Member member;
     @OneToOne
     @JoinColumn(name = "payment_id")
-    private Payment payment;  // 걸제정보 onetoone
+    private Payment payment;  // 걸제정보
     @Column(name = "booking_date")
     private LocalDateTime bookingDate; // 예매일
     @Column(name = "visit_date")
-    private LocalDateTime visitDate; // 전시관람일
+    private LocalDate visitDate; // 전시관람일
+    private String bookedName; // 예매자이름
+    private String bookedEmail; // 예매자 이메일
+    private String bookedTel; // 예매자전화번호
+    private String getTicket; // 티켓수령방법
 
     public Member getMember() {
         return member;
