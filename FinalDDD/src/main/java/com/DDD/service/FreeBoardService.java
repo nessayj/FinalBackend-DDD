@@ -175,8 +175,9 @@ public class FreeBoardService {
             if (freeBoard != null && freeBoard.getViews() != null) {
                 freeBoardDto.setViews(freeBoard.getViews()); // 조회수 현재값으로 재수정
                 System.out.println("조회수: " + freeBoard.getViews());
+            } else {
+                freeBoardDto.setViews(0); // 조회수 초기 null 값인 경우 0으로 설정
             }
-
 
             Member author = freeBoard.getMember(); // nickName 을 fk로 갖고 오기 위해
 
