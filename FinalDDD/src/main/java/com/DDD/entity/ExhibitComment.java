@@ -1,19 +1,17 @@
 package com.DDD.entity;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter @Setter @ToString
-@RequiredArgsConstructor
+@NoArgsConstructor
 @Table(name = "exhibitComment")
 public class ExhibitComment {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(nullable = false)
     private Long commentNo; // pk; 한줄평 번호
     @ManyToOne
@@ -22,7 +20,6 @@ public class ExhibitComment {
     @ManyToOne
     @JoinColumn(name="exhibit_no")
     private Exhibitions exhibitions; // 전시회와 조인
-
     private double starRates; // 별점
     private String comment; // 한줄평
     private LocalDateTime commentTime; // 한줄평 단 시간

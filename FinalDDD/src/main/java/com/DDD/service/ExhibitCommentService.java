@@ -1,7 +1,6 @@
 package com.DDD.service;
 
 
-import com.DDD.dto.ExhibitCommentDTO;
 import com.DDD.entity.ExhibitComment;
 import com.DDD.entity.Exhibitions;
 import com.DDD.entity.Member;
@@ -27,25 +26,38 @@ public class ExhibitCommentService {
     private final ExhibitCommentRepository exhibitCommentRepository;
 
     // 한줄 평 작성
-    public boolean writeComment(Long id, Long exhibitNo, Long starRates, String comment) {
-        Optional<Member> member = memberRepository.findById(id);
-        Exhibitions exhibitions = exhibitionsRepository.findByExhibitNo(exhibitNo);
+    public boolean writeComment(String id, String exhibitNo, String starRates, String comment) {
+        try {
 
-        if(member != null && exhibitions != null) {
+            // 회원번호로 회원찾기
+            Optional<Member> member = memberRepository.findById(Long.parseLong(id));
+            if (member.isEmpty()) {
+                throw new IllegalArgumentException("없는 회원 ID 입니다!");
+            }
+
+            Exhibitions exhibition = exhibitionsRepository.findByExhibitNo(Long.parseLong(exhibitNo));
+            if (exhibition == null) {
+                throw new IllegalArgumentException("없는 전시번호입니다!");
+            }
+
             ExhibitComment exhibitComment = new ExhibitComment();
             exhibitComment.setMember(member.get());
-            exhibitComment.setExhibitions(exhibitions);
-            exhibitComment.setStarRates(starRates);
+            exhibitComment.setExhibitions(exhibition);
+            exhibitComment.setStarRates(Double.parseDouble(starRates));
             exhibitComment.setComment(comment);
             exhibitComment.setCommentTime(LocalDateTime.now());
 
             exhibitCommentRepository.save(exhibitComment);
-        }
-        try {
-            return true;
+
+            return true; // 작성 성공 시 true 반환
+
+
         } catch (Exception e) {
+            e.printStackTrace();
             System.err.println("오류 발생!! 🤬🤬 : " + e.getMessage());
-            return false;
+            return false; // 예외 발생 시 false 반환
         }
     }
+
+
 }

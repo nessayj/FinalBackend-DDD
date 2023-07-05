@@ -52,7 +52,7 @@ public class BookingService {
             // 회원번호로 회원찾기
             Optional<Member> member = memberRepository.findById(Long.parseLong(id));
             if (member.isEmpty()) {
-                throw new IllegalArgumentException("Invalid member ID");
+                throw new IllegalArgumentException("없는 회원 ID 입니다!");
             }
             // 찾은 회원 예매에 입력
             booking.setMember(member.get());
