@@ -42,17 +42,12 @@ public class FreeBoardController {
         }
     }
 
-//    // 게시글 상세 조회
-//    @GetMapping("/boardView/{boardNo}")
-//    public ResponseEntity<FreeBoard> getBoard(@PathVariable("boardNo") Long boardNo) {
-//        return new ResponseEntity(freeBoardService.selectBoardOne(boardNo), HttpStatus.OK);
-//    }
-
     // 게시글 상세 조회
     @GetMapping("/boardView/{boardNo}")
     public ResponseEntity<FreeBoardDto> getBoard(@PathVariable("boardNo") Long boardNo) {
         return new ResponseEntity(freeBoardService.selectBoardOne(boardNo), HttpStatus.OK);
     }
+
 
     // 게시글 수정(최종)
     @PutMapping("/boardView/{boardNo}")
@@ -70,6 +65,7 @@ public class FreeBoardController {
         }
     }
 
+
     // 게시글 삭제(최종)
     @DeleteMapping("/boardView/{boardNo}")
     public ResponseEntity<Boolean> delBoards(@PathVariable Long boardNo) {
@@ -81,6 +77,7 @@ public class FreeBoardController {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
     }
+
 
     // 카테고리별 자유게시판 목록 조회
     @GetMapping("/{category}")
@@ -94,6 +91,7 @@ public class FreeBoardController {
         }
     }
 
+
     // 자유게시판 검색 키워드에 해당하는 리스트 불러오기
     @GetMapping("/searchList")
     public ResponseEntity<List<FreeBoardDto>> searchListLoad(@RequestParam String keyword) {
@@ -103,6 +101,14 @@ public class FreeBoardController {
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+
+    // 특정 회원이 작성한 게시글 조회(마이페이지 내 게시글)
+    @GetMapping("/members/{memberId}/boards")
+    public ResponseEntity<List<FreeBoardDto>> getBoardsByMember(@PathVariable("memberId") Long id) {
+        List<FreeBoardDto> freeBoardDtos = freeBoardService.getBoardsByMember(id);
+        return ResponseEntity.ok(freeBoardDtos);
     }
 }
 

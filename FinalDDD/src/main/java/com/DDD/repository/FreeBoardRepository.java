@@ -29,6 +29,7 @@ public interface FreeBoardRepository extends JpaRepository<FreeBoard, Long> {
     @Query("SELECT fb FROM FreeBoard fb WHERE fb.title LIKE %:keyword% OR fb.contents LIKE %:keyword% ORDER BY fb.boardNo DESC")
     List<FreeBoard> findWithKeyword(@Param("keyword") String keyword);
 
-
+    // 마이페이지 내 게시물 조회
+    List<FreeBoard> findByMember(Member member);
 }
 

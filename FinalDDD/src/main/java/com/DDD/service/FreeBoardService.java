@@ -37,7 +37,7 @@ public class FreeBoardService {
     // 게시글 작성
     public boolean createBoards(Long id, String category, String region, String title, String image, String contents) {
         // DTO 에서 작성자 정보 가져오기
-       Optional<Member> optionalMember = memberRepository.findById(id);
+        Optional<Member> optionalMember = memberRepository.findById(id);
 
 
         if (optionalMember.isEmpty()) {
@@ -60,8 +60,7 @@ public class FreeBoardService {
     }
 
 
-
-    // 게시글 상세조회
+    // 게시글 상세조회(+댓글 포함)
     public FreeBoardDto selectBoardOne(Long boardNo) {
         FreeBoard freeBoard = freeBoardRepository.findById(boardNo)
                 .orElseThrow(() -> new EntityNotFoundException("해당 게시물을 찾을 수 없습니다."));
@@ -76,7 +75,6 @@ public class FreeBoardService {
         freeBoard.setViews(freeBoard.getViews() + 1);
         freeBoardRepository.save(freeBoard);
         System.out.println("조회수 : " + freeBoard.getViews());
-
 
 
         FreeBoardDto freeboardDto = new FreeBoardDto();
@@ -119,13 +117,8 @@ public class FreeBoardService {
         freeboardDto.setProfileImg(freeBoard.getMember().getProfileImg());
 
 
-
         return freeboardDto;
     }
-
-
-
-
 
 
     // 게시글 수정(최종) + 작성자 인증 제외(프엔 측 작성자 본인만 해당 페이지 접근 가능하도록 조건식 적용)
@@ -155,14 +148,14 @@ public class FreeBoardService {
         freeBoardRepository.delete(freeBoard);
         return true;
     }
-    
+
 
     // 카테고리별 게시판 조회
     public List<FreeBoardDto> getFreeBoardsByCategory(String category) { // 카테고리별로 가져오기 위해
         List<FreeBoardDto> freeBoards = new ArrayList<>();
         List<FreeBoard> freeBoardList = freeBoardRepository.findByCategoryOrderByWriteDateDesc(category); // 최근 작성순 기준 카테고리별 조회
 
-        for(FreeBoard freeBoard : freeBoardList) {
+        for (FreeBoard freeBoard : freeBoardList) {
             FreeBoardDto freeBoardDto = new FreeBoardDto();
             freeBoardDto.setBoardNo(freeBoard.getBoardNo());
             freeBoardDto.setCategory(freeBoard.getCategory());
@@ -170,7 +163,7 @@ public class FreeBoardService {
             freeBoardDto.setTitle(freeBoard.getTitle());
             freeBoardDto.setImage(freeBoard.getImage()); // 추가사항(이미지)
             freeBoardDto.setWriteDate(freeBoard.getWriteDate());
-            
+
             // 조회수 오류 수정
             if (freeBoard != null && freeBoard.getViews() != null) {
                 freeBoardDto.setViews(freeBoard.getViews()); // 조회수 현재값으로 재수정
@@ -212,7 +205,6 @@ public class FreeBoardService {
             System.out.println("조회수: " + freeBoard.getViews());
 
 
-
             Member author = freeBoard.getMember();
             if (author != null) {
                 MemberDto memberDto = MemberDto.fromMember(author);
@@ -221,5 +213,45 @@ public class FreeBoardService {
             freeBoards.add(freeBoardDto);
         }
         return freeBoards;
+    }
+
+    // 특정 회원이 작성한 게시글 조회(마이페이지 내 게시글)
+    public List<FreeBoardDto> getBoardsByMember(Long id) {
+        Optional<Member> optionalMember = memberRepository.findById(id);
+
+
+        if (optionalMember.isEmpty()) {
+            throw new UsernameNotFoundException("해당 멤버를 찾을 수 없습니다.");
+        }
+
+        Member member = optionalMember.get();
+
+        List<FreeBoard> freeBoardList = freeBoardRepository.findByMember(member);
+        List<FreeBoardDto> freeBoardDtos = new ArrayList<>();
+        for (FreeBoard freeBoard : freeBoardList) {
+            FreeBoardDto freeBoardDto = new FreeBoardDto();
+
+
+            freeBoardDto.setBoardNo(freeBoard.getBoardNo());
+            freeBoardDto.setCategory(freeBoard.getCategory());
+            freeBoardDto.setTitle(freeBoard.getTitle());
+            freeBoardDto.setWriteDate(freeBoard.getWriteDate());
+            freeBoardDto.setId(freeBoard.getMember().getId());
+
+            Member author = freeBoard.getMember(); // 작성자
+
+            if (author != null) {
+                MemberDto memberDto = MemberDto.fromMember(author);
+                if (memberDto != null) {
+                    freeBoardDto.setAuthor(memberDto.getNickname());
+                }
+            }
+
+            freeBoardDto.setViews(freeBoard.getViews());
+            System.out.println("조회수: " + freeBoard.getViews());
+
+            freeBoardDtos.add(freeBoardDto);
+        }
+        return freeBoardDtos;
     }
 }
