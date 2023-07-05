@@ -23,8 +23,8 @@ public class FreeBoard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long boardNo; // Primary Key : 게시판 번호
 
-//    @ManyToOne(fetch = FetchType.LAZY) // N:1 다대일 관계
-    @ManyToOne(fetch = FetchType.EAGER) // N:1 다대일 관계 -- 변경사항
+//    @ManyToOne(fetch = FetchType.LAZY) // N:1 다대일 관계 / LAZY : 필요한 시점에 연관 엔티티를 로딩
+    @ManyToOne(fetch = FetchType.EAGER) // N:1 다대일 관계 -- 변경사항 / EAGER : 엔티티가 로딩될 때 연관된 엔티티도 동시에 로딩
     @JoinColumn(name = "author_id",  referencedColumnName = "member_id", nullable = false)
     // author 은 게시판 테이블의 작성자, 'referencedColumnName' 는 참조 테이블로 회원정보의 PK를 참조함
     private Member member; // 클래스에 대한 참조변수
@@ -54,7 +54,7 @@ public class FreeBoard {
 
 
 //    // 댓글 테이블 조인
-    @OneToMany(mappedBy = "freeBoard", fetch = FetchType.LAZY, cascade = CascadeType.ALL) // 하나의 게시물에 다수의 댓글 존재하므로
+    @OneToMany(mappedBy = "freeBoard", fetch = FetchType.EAGER, cascade = CascadeType.ALL) // 하나의 게시물에 다수의 댓글 존재하므로
 //    private List<BoardComment> comments;
     private List<BoardComment> comments = new ArrayList<>(); // 댓글 목록
 

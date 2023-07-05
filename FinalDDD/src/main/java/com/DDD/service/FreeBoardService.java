@@ -71,28 +71,40 @@ public class FreeBoardService {
             freeBoard.setViews(freeBoard.getViews() + 1);
         }
         freeBoardRepository.save(freeBoard);
+        System.out.println("조회수 : " + freeBoard.getViews());
+
+//
+//        // 조회수 오류 수정
+//        if (freeBoard != null && freeBoard.getViews() != null) {
+//            freeBoardDto.setViews(freeBoard.getViews()); // 조회수 현재값으로 재수정
+//            System.out.println("조회수: " + freeBoard.getViews());
+//        }
 
 
         FreeBoardDto freeboardDto = new FreeBoardDto();
         freeboardDto.setBoardNo(freeBoard.getBoardNo());
         freeboardDto.setAuthor(freeBoard.getMember().getNickname());
 
+
         log.info("Comments: {}", freeBoard.getComments());
         List<BoardComment> comments = freeBoard.getComments();
         List<BoardCommentDto> boardCommentDtos = new ArrayList<>();
 
+        // 댓글 리스트 영역
         for (BoardComment comment : comments) {
             BoardCommentDto boardCommentDto = new BoardCommentDto();
             boardCommentDto.setCommentNo(comment.getCommentNo());
             boardCommentDto.setContent(comment.getContent());
-            // 필요한 다른 필드들도 추가 가능
-            // ...
+            boardCommentDto.setWriteDate(comment.getWriteDate());
+            boardCommentDto.setBoardNo(comment.getFreeBoard().getBoardNo());
+            boardCommentDto.setId(comment.getMember().getId());
+            boardCommentDto.setProfileImg(comment.getMember().getProfileImg());
+            boardCommentDto.setNickname(comment.getMember().getNickname());
+
             boardCommentDtos.add(boardCommentDto);
         }
 
         freeboardDto.setComments(boardCommentDtos);
-
-
 
 
 //        freeboardDto.setEmail(freeBoard.getMember().getEmail()); // 회원 정보 할당

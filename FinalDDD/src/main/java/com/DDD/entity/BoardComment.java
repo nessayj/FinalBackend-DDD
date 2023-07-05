@@ -28,7 +28,7 @@ public class BoardComment {
     private LocalDateTime writeDate; // 댓글 작성일
 
     // 게시판 테이블의 게시판 번호를 외래 키(FK)로 가져옴(한 개의 게시물의 여러 댓글)
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_no")
     private FreeBoard freeBoard; // 게시판 번호
 
@@ -36,4 +36,13 @@ public class BoardComment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-}
+
+    @Override
+    public String toString() { // 게시판 테이블 조인 시 toString 적용 안되어 별도 적용
+        return "BoardComment{" +
+                "commentNo=" + commentNo +
+                ", content='" + content + '\'' +
+                ", writeDate=" + writeDate +
+                '}';
+        }
+    }

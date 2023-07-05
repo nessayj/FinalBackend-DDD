@@ -1,6 +1,7 @@
 package com.DDD.controller;
 
-import com.DDD.dto.BoardCommentDto;
+
+import com.DDD.entity.BoardComment;
 import com.DDD.service.BoardCommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,19 @@ public class BoardCommentController {
             return new ResponseEntity<>(false, HttpStatus.OK);
         }
     }
+
+    // 댓글 삭제
+    @DeleteMapping("/commentDelete/{commentNo}")
+    public ResponseEntity<String> commentDelete(@PathVariable Long commentNo) {
+        try {
+            boardCommentService.deleteComments(commentNo);
+            return ResponseEntity.ok("댓글이 삭제되었습니다");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("댓글 삭제 중 오류가 발생되었습니다.");
+        }
+    }
+
 }
-
-
 
