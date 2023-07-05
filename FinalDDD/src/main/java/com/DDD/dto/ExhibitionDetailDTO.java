@@ -8,6 +8,8 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 
+import java.math.BigDecimal;
+
 @Getter @Setter @ToString
 @RequiredArgsConstructor
 @Slf4j
@@ -26,6 +28,9 @@ public class ExhibitionDetailDTO {
     private String placeUrl; // 해당 전시회 사이트주소
     private String exhibitAddr; // 전시회 주소
     private int locationNo; // 전시회 고유번호
+    private BigDecimal locationX; // 전시회장 주소 x좌표
+    private BigDecimal locationY; // 전시회장 주소 y좌표
+
 
     // API DTO 저장
     public ExhibitionDetailDTO (JSONObject item) {
@@ -49,6 +54,8 @@ public class ExhibitionDetailDTO {
         this.placeUrl = item.getString("placeUrl");
         this.exhibitAddr = item.getString("placeAddr");
         this.locationNo = item.getInt("placeSeq");
+        this.locationX = item.getBigDecimal("gpsX");
+        this.locationY = item.getBigDecimal("gpsY");
 
     }
 }

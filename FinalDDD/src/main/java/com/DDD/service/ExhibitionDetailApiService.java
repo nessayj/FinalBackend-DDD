@@ -51,7 +51,7 @@ public class ExhibitionDetailApiService {
                     responseBuilder.append(line);
                 }
                 reader.close();
-                System.out.println("상세정보주소 : " + urlString);
+               // System.out.println("상세정보주소 : " + urlString);
                 // 응답 데이터 반환
                 return responseBuilder.toString();
             } else {
