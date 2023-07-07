@@ -103,12 +103,12 @@ public class FreeBoardController {
         }
     }
 
-
-    // 특정 회원이 작성한 게시글 조회(마이페이지 내 게시글)
+//  특정 회원이 작성한 게시글 조회(마이페이지 내 게시글)
     @GetMapping("/members/{memberId}/boards")
     public ResponseEntity<List<FreeBoardDto>> getBoardsByMember(@PathVariable("memberId") Long id) {
         List<FreeBoardDto> freeBoardDtos = freeBoardService.getBoardsByMember(id);
         return ResponseEntity.ok(freeBoardDtos);
     }
 }
+
 
