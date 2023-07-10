@@ -8,6 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -32,8 +33,14 @@ public class MemberRequestDto { // DB 넣어질 요소
                 .name(name)
                 .tel(tel)
                 .authority(Authority.ROLE_USER)
+                .isActive(true)
+                .instagram(instagram)
+                .profileImg("/default-profile.png")
+                .backgroundImg("/default-BG.jpg")
                 .build();
     }
+
+
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(email, password);
     }

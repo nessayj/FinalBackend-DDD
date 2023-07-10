@@ -7,6 +7,7 @@ import com.DDD.entity.Member;
 import com.DDD.jwt.TokenProvider;
 import com.DDD.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -14,6 +15,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -23,22 +27,107 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final EmailService emailService;
 
+    @Transactional
     public MemberResponseDto signup(MemberRequestDto requestDto) {
         if (memberRepository.existsByEmail(requestDto.getEmail())) {
             throw new RuntimeException("이미 가입되어 있는 유저입니다");
+        } else {
+            Member member = requestDto.toMember(passwordEncoder);
+            String emailCheckToken = UUID.randomUUID().toString();
+            member.setEmailCheckToken(emailCheckToken);
+            memberRepository.save(member);
+
+            // Compose email content
+            String subject = "Email Confirmation";
+            String body = "Click this link to confirm your email: " +
+                    "<a href=\"http://localhost:8111/user/check-email-token?token=" + emailCheckToken + "\">Confirm Email</a>";
+
+            // Send email
+            emailService.sendMail(member.getEmail(), subject, body);
+            return MemberResponseDto.of(member);
         }
-        Member member = requestDto.toMember(passwordEncoder);
-        return MemberResponseDto.of(memberRepository.save(member));
+    }
+//    public MemberResponseDto signup(MemberRequestDto requestDto) {
+//        if (memberRepository.existsByEmail(requestDto.getEmail())) {
+//            throw new RuntimeException("이미 가입되어 있는 유저입니다");
+//        } else {
+//            // Convert the requestDto to a Member entity
+//            Member member = requestDto.toMember(passwordEncoder);
+//
+//            // Generate email verification token
+//            String emailCheckToken = UUID.randomUUID().toString();
+//            member.setEmailCheckToken(emailCheckToken);
+//
+//            // Save the new member to the database
+//            memberRepository.save(member);
+//
+//            // Compose email content
+//            String subject = "Email Confirmation";
+//            String body = "Click this link to confirm your email: " +
+//                    "<a href=\"http://localhost:8111/user/check-email-token?token=" + emailCheckToken + "\">Confirm Email</a>";
+//
+//            // Send email
+//            emailService.sendMail(requestDto.getEmail(), subject, body);
+//
+//            return MemberResponseDto.of(member);
+//        }
+//    }
+
+
+    public boolean getIsActive(Long memberId) {
+        Optional<Member> memberOptional = memberRepository.findById(memberId);
+
+        // If no member is present, throw an exception
+        if (!memberOptional.isPresent()) {
+            throw new UsernameNotFoundException("No user found with email: " + memberId);
+        }
+
+        // If a member is present, return its isActive status
+        Member member = memberOptional.get();
+        return member.isActive();
     }
 
     public TokenDto login(MemberRequestDto requestDto) {
         UsernamePasswordAuthenticationToken authenticationToken = requestDto.toAuthentication();
-        Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
         Long memberId = getMemberIdByEmail(requestDto.getEmail());
+        boolean isActive = getIsActive(memberId);
+        if (!isActive) {
+            throw new RuntimeException("This account is inactive.");
+        }
 
+        // 사용자가 활성 상태라면 인증을 진행합니다.
+        Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
         return tokenProvider.generateTokenDto(authentication, memberId); // memberId 인자 추가
     }
+
+
+    // 회원 삭제
+    public void delete(MemberRequestDto requestDto) {
+        Member member = memberRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        if (!passwordEncoder.matches(requestDto.getPassword(), member.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        }
+        member.setActive(false);
+        memberRepository.save(member);
+    }
+
+    // 비밀번호 변경
+    public void changePw(Long id, String password, String newPassword){
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(password, member.getPassword())) {
+            throw new BadCredentialsException("Invalid password");
+        } else {
+            member.setPassword(passwordEncoder.encode(newPassword));
+            memberRepository.save(member);
+        }
+    }
+
+
 
     public Long getMemberIdByEmail(String email) {
         return memberRepository.findByEmail(email)

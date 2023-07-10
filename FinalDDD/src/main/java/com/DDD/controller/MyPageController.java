@@ -1,11 +1,15 @@
 package com.DDD.controller;
 
 import com.DDD.dto.MemberDto;
+import com.DDD.dto.MemberRequestDto;
+import com.DDD.service.AuthService;
 import com.DDD.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -18,10 +22,12 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/mypage/{memberId}")
-@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/mypage/{memberId}")
+//@CrossOrigin(origins = "http://localhost:3000")
 public class MyPageController {
     private final MemberService memberService;
+    private final AuthService authService;
+
 
     // 마이페이지 정보 가져오기
     @GetMapping
@@ -78,38 +84,39 @@ public class MyPageController {
         return ResponseEntity.ok(memberService.newIntroduce(id, introduce));
     }
 
-//    @PostMapping("/memberdelete")
-//    public ResponseEntity<Map<?, ?>> memberDelete( HttpServletResponse response, @RequestBody Map<String, Object> Data) {
-//        String email = (String) Data.get("email");
-//        String password = (String) Data.get("password");
-//        return ResponseEntity.ok(memberService.memberDelete(email, password));
-//
-//    }
-//    @PostMapping("/memberdelete")
-//    public ResponseEntity<Map<?, ?>> memberDelete(
-//            HttpServletResponse response,
-//            @CookieValue(value = "token", required = false) String token,
-//            @RequestBody Map<String, Object> Data) throws Exception {
-//        String email = (String) Data.get("email");
-//        String password = (String) Data.get("password");
-//        Map<String ,String> map = new HashMap<>();
-//        if(token != null){
-//            log.info("로그인상태입니당");
-//            String memberNumStr = jwtController.tokenCheck(token);
-//            Long memberNum = Long.parseLong(memberNumStr);
-//            map = memberService.memberDelete(email, password);
-//            if(map.get("memberDelete").equals("OK")){
-//                Cookie cookie = new Cookie("token", null); // choiceCookieName(쿠키 이름)에 대한 값을 null로 지정
-//                cookie.setMaxAge(0); // 유효시간을 0으로 설정
-//                cookie.setHttpOnly(true);
-//                cookie.setPath("/");
-//                response.addCookie(cookie);
-//            }
-//        }else {
-//            map.put("memberDelete", "loginError");
-//        }
-//        return ResponseEntity.ok().body(map);
-//    }
+    // 회원 탈퇴 (Active false로 변경)
+    @PostMapping("/delete")
+    public ResponseEntity<String> delete(@RequestBody MemberRequestDto requestDto) {
+        authService.delete(requestDto);
+        return ResponseEntity.ok("Member deactivated successfully");
+    }
+
+    // 프로필 사진 변경
+    @PostMapping("/profileImg")
+    public ResponseEntity<Boolean>  proifileImg(@RequestBody Map<String, String> infoData) {
+        Long id = Long.valueOf(infoData.get("id"));
+        String profileImg = infoData.get("profileImg");
+        return ResponseEntity.ok(memberService.newProfileImg(id, profileImg));
+    }
+    // 배경화면 이미지 변경
+    @PostMapping("/backgroundImg")
+    public ResponseEntity<Boolean>  backgroundImg(@RequestBody Map<String, String> infoData) {
+        Long id = Long.valueOf(infoData.get("id"));
+        String backgroundImg = infoData.get("backgroundImg");
+        return ResponseEntity.ok(memberService.newBackgroundImg(id, backgroundImg));
+    }
+
+    // 비밀번호 변경
+    @PostMapping("/password")
+    public ResponseEntity<String> changePassword(@RequestBody Map<String, String> infoData) {
+        Long id = Long.valueOf(infoData.get("id"));
+        String password = infoData.get("password");
+        String newPassword = infoData.get("newPassword");
+
+        authService.changePw(id, password, newPassword);
+        return ResponseEntity.ok("password changed successfully");
+    }
+
 
 
 
