@@ -22,7 +22,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/login")
 @RequiredArgsConstructor
-//@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000")
 public class MemberController {
     private final MemberService memberService;
     private final AuthService authService;
@@ -40,7 +40,7 @@ public class MemberController {
     }
 
     @GetMapping("/check-email-token")
-    public String checkEmailToken(String token, String email){
+    public String checkEmailToken(@RequestParam String token, @RequestParam String email){
         Optional<Member> memberOpt = memberRepository.findByEmail(email);
         if(memberOpt.isPresent()){
             Member member = memberOpt.get();

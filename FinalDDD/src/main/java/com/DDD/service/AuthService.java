@@ -7,6 +7,7 @@ import com.DDD.entity.Member;
 import com.DDD.jwt.TokenProvider;
 import com.DDD.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -46,6 +49,8 @@ public class AuthService {
 
             // Send email
             emailService.sendMail(member.getEmail(), subject, body);
+            log.info("AuthService의 email : "+ member.getEmail());
+            log.info("AuthService의 email token : "+ emailCheckToken);
             return MemberResponseDto.of(member);
         }
     }
