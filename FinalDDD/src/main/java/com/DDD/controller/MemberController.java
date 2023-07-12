@@ -40,17 +40,17 @@ public class MemberController {
     }
 
     @GetMapping("/check-email-token")
-    public String checkEmailToken(@RequestParam String token, @RequestParam String email){
-        Optional<Member> memberOpt = memberRepository.findByEmail(email);
-        if(memberOpt.isPresent()){
-            Member member = memberOpt.get();
-            if(member.getEmailCheckToken().equals(token)){
-                member.setActive(true);
-                memberRepository.save(member);
-                return "인증이 완료되었습니다.";
-            }
+    public String checkEmailToken(@RequestParam("token") String token) {
+        Optional<Member> optionalUser = memberRepository.findByEmailCheckToken(token);
+        if (optionalUser.isPresent()) {
+            Member member = optionalUser.get();
+            member.setActive(true);
+            member.setEmailCheckToken(null); // after validation you can null the token
+            memberRepository.save(member);
+            return "Email is successfully verified";
+        } else {
+            return "Invalid token";
         }
-        return "인증에 실패하였습니다.";
     }
 
 

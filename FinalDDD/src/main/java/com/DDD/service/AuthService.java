@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 
-
+// ==================== 이메일 인증 창 port번호 확인 ======================
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -45,7 +45,7 @@ public class AuthService {
             // Compose email content
             String subject = "Email Confirmation";
             String body = "Click this link to confirm your email: " +
-                    "<a href=\"http://localhost:8111/user/check-email-token?token=" + emailCheckToken + "\">Confirm Email</a>";
+                    "<a href=\"http://localhost:3000/login/check-email-token?token=" + emailCheckToken + "\">Confirm Email</a>";
 
             // Send email
             emailService.sendMail(member.getEmail(), subject, body);
@@ -54,32 +54,7 @@ public class AuthService {
             return MemberResponseDto.of(member);
         }
     }
-//    public MemberResponseDto signup(MemberRequestDto requestDto) {
-//        if (memberRepository.existsByEmail(requestDto.getEmail())) {
-//            throw new RuntimeException("이미 가입되어 있는 유저입니다");
-//        } else {
-//            // Convert the requestDto to a Member entity
-//            Member member = requestDto.toMember(passwordEncoder);
 //
-//            // Generate email verification token
-//            String emailCheckToken = UUID.randomUUID().toString();
-//            member.setEmailCheckToken(emailCheckToken);
-//
-//            // Save the new member to the database
-//            memberRepository.save(member);
-//
-//            // Compose email content
-//            String subject = "Email Confirmation";
-//            String body = "Click this link to confirm your email: " +
-//                    "<a href=\"http://localhost:8111/user/check-email-token?token=" + emailCheckToken + "\">Confirm Email</a>";
-//
-//            // Send email
-//            emailService.sendMail(requestDto.getEmail(), subject, body);
-//
-//            return MemberResponseDto.of(member);
-//        }
-//    }
-
 
     public boolean getIsActive(Long memberId) {
         Optional<Member> memberOptional = memberRepository.findById(memberId);
