@@ -53,6 +53,13 @@ public class MemberController {
         }
     }
 
+    @PostMapping("/forgot")
+    public ResponseEntity<Boolean> forgotPw(@RequestBody Map<String, String> forgotEmail) {
+        String email = forgotEmail.get("email");
+        boolean sendNewPassword = memberService.forgotEmail(email);
+        return ResponseEntity.ok(sendNewPassword);
+    }
+
 
 
     @PostMapping("/emaildup")
