@@ -4,8 +4,10 @@ import com.DDD.dto.MemberRequestDto;
 import com.DDD.dto.MemberResponseDto;
 import com.DDD.dto.TokenDto;
 import com.DDD.entity.Member;
+import com.DDD.entity.RefreshToken;
 import com.DDD.jwt.TokenProvider;
 import com.DDD.repository.MemberRepository;
+import com.DDD.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,6 +30,7 @@ import java.util.UUID;
 public class AuthService {
     private final AuthenticationManagerBuilder managerBuilder;
     private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final EmailService emailService;
@@ -69,6 +72,7 @@ public class AuthService {
         return member.isActive();
     }
 
+    @Transactional
     public TokenDto login(MemberRequestDto requestDto) {
         UsernamePasswordAuthenticationToken authenticationToken = requestDto.toAuthentication();
         Long memberId = getMemberIdByEmail(requestDto.getEmail());
@@ -79,7 +83,24 @@ public class AuthService {
 
         // 사용자가 활성 상태라면 인증을 진행합니다.
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
-        return tokenProvider.generateTokenDto(authentication, memberId); // memberId 인자 추가
+
+        // Generate new tokens
+        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication, memberId); // memberId 인자 추가
+
+        // Create or update refresh token entity
+        Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findById(memberId);
+        if (refreshTokenOptional.isPresent()) {
+            // If refresh token exists for the user, update it
+            RefreshToken refreshToken = refreshTokenOptional.get();
+            refreshToken.update(tokenDto.getRefreshToken());
+        } else {
+            // If refresh token does not exist for the user, create a new one
+            RefreshToken refreshToken = new RefreshToken(String.valueOf(memberId), tokenDto.getRefreshToken());
+            log.info(String.valueOf(refreshToken));
+            refreshTokenRepository.save(refreshToken);
+        }
+
+        return tokenDto;
     }
 
 

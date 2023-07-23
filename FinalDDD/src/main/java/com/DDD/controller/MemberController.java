@@ -8,6 +8,7 @@ import com.DDD.entity.Member;
 import com.DDD.repository.MemberRepository;
 import com.DDD.service.AuthService;
 import com.DDD.service.MemberService;
+import com.DDD.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,15 @@ public class MemberController {
     private final MemberService memberService;
     private final AuthService authService;
     private final MemberRepository memberRepository;
+    private final TokenService tokenService;
 
+
+    // AccessToken 재발급 코드
+    @PostMapping("/auth/token")
+    public ResponseEntity<TokenDto> renewAccessToken(@RequestBody TokenDto requestDto){
+        TokenDto renewDto = tokenService.createNewAccessToken(requestDto.getRefreshToken());
+        return ResponseEntity.ok(renewDto);
+    }
 
     @PostMapping
     public ResponseEntity<TokenDto> login(@RequestBody MemberRequestDto requestDto) {

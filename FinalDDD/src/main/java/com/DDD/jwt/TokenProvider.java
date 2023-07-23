@@ -89,6 +89,29 @@ public class TokenProvider {
                 .build();
     }
 
+    public TokenDto generateAccessTokenDto(Authentication authentication, Long memberId, String refreshToken) {
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+
+        long now = (new Date()).getTime();
+
+        Date tokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+
+        System.out.println(tokenExpiresIn);
+
+        String accessToken = Jwts.builder()
+                .setSubject(authentication.getName())
+                .claim(AUTHORITIES_KEY, authorities)
+                .claim("memberId", authentication.getName())
+                .setExpiration(tokenExpiresIn)
+                .signWith(key, SignatureAlgorithm.HS512)
+                .compact();
+
+        return new TokenDto(accessToken, refreshToken, tokenExpiresIn.getTime(), memberId);  // Use the new constructor to create the object
+    }
+
+
     public TokenDto refreshToken(String expiredToken) {
         // 만료된 토큰을 파싱함
         Claims claims = parseClaims(expiredToken);
@@ -114,7 +137,7 @@ public class TokenProvider {
     }
 
 
-
+    //권한에 대해 인증을 하는 부분
     public Authentication getAuthentication(String accessToken) {
         Claims claims = parseClaims(accessToken);
 

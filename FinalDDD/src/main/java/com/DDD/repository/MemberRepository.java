@@ -22,7 +22,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByNickname(String nickname);
 
     // 회원번호(PK) 찾기
-    Optional<Member> findById(long id);
+    Optional<Member> findById(Long id);
     Optional<Member> findByEmailCheckToken(String token);
 
     // 비밀번호 조회
